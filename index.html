@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+<html lang="en-NZ">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>KiwiSaver Projection Check — Fernlight Advice</title>
+<meta name="description" content="Project your KiwiSaver balance to retirement, or estimate what you could put toward a first-home deposit. A minute of questions, then an optional chat with a Fernlight adviser. No cost." />
+<meta name="robots" content="noindex" />
+<!-- Demo build: a static portfolio page. Nothing is tracked, posted or stored.
+     The CSP below enforces that in the browser: connect-src and form-action are
+     'none', so fetch, XHR, sendBeacon and form submission are all blocked; only
+     Google Fonts may load from outside this folder. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'none'; form-action 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'" />
+<link rel="icon" href="data:," />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --deep:#1C2340;
+    --deep-2:#262F57;
+    --indigo:#2F3E8F;
+    --indigo-dark:#253274;
+    --amber:#F2A541;
+    --amber-dark:#E3922A;
+    --positive:#3A8F6B;
+    --soft:#F7F5EF;
+    --card:#FFFDF9;
+    --tint:#EEF0F8;
+    --ink:#1C2340;
+    --ink-soft:#4B5272;
+    --line:#E2E1EA;
+    --line-dark:rgba(247,245,239,.16);
+    --soft-dim:rgba(247,245,239,.78);
+    --ok-bg:#E4F2EB;
+    --ok-ink:#2C6E52;
+    --warn-bg:#FDF0DC;
+    --warn-ink:#87520F;
+    --shadow:0 24px 60px -26px rgba(0,0,0,.55);
+    --display:"Manrope",system-ui,sans-serif;
+    --body:"Inter",system-ui,sans-serif;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;}
+  body{
+    margin:0;font-family:var(--body);color:var(--soft);line-height:1.55;-webkit-font-smoothing:antialiased;
+    background-color:var(--deep);
+    background-image:radial-gradient(900px 520px at 50% -140px,rgba(47,62,143,.9),rgba(47,62,143,0) 72%);
+    background-repeat:no-repeat;
+  }
+  [hidden]{display:none!important;}
+  button{font-family:inherit;}
+  .num{font-variant-numeric:tabular-nums;}
+  .nowrap{white-space:nowrap;}
+  .wrap{position:relative;z-index:1;max-width:600px;margin:0 auto;padding:0 20px;}
+
+  /* header */
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:22px 0 6px;}
+  .brand{display:inline-flex;align-items:center;gap:10px;text-decoration:none;color:var(--soft);}
+  .logo-mark{width:38px;height:38px;flex:0 0 auto;display:block;}
+  .wordmark{font-family:var(--display);font-weight:800;font-size:17px;letter-spacing:-.01em;line-height:1.05;color:var(--soft);white-space:nowrap;}
+  .wordmark span{font-weight:500;color:var(--amber);}
+  .phone{display:inline-flex;align-items:center;gap:8px;background:var(--amber);color:var(--deep);font-family:var(--display);font-weight:700;font-size:14px;padding:10px 16px;border-radius:999px;text-decoration:none;transition:background .16s;-webkit-tap-highlight-color:transparent;white-space:nowrap;}
+  .phone:hover{background:var(--amber-dark);}
+  .phone svg{flex:0 0 auto;}
+
+  /* hero */
+  .hero{padding:26px 0 4px;}
+  .eyebrow{font-family:var(--display);font-weight:700;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--amber);margin:0 0 12px;}
+  h1{font-family:var(--display);font-weight:800;letter-spacing:-.025em;font-size:clamp(32px,7.8vw,50px);line-height:1.06;margin:0 0 8px;text-wrap:balance;color:var(--soft);}
+  h1 .lift{color:var(--amber);}
+  .lede{font-size:clamp(15px,4vw,17px);color:var(--soft-dim);margin:0;max-width:34em;}
+
+  /* quiz card */
+  .card{background:var(--card);border-radius:20px;box-shadow:var(--shadow);margin:26px 0 18px;overflow:hidden;color:var(--ink);}
+  .card-rail{height:6px;background:var(--tint);position:relative;}
+  .card-rail i{position:absolute;inset:0 100% 0 0;background:linear-gradient(90deg,var(--indigo),var(--amber));transition:right .45s cubic-bezier(.22,.9,.3,1);}
+  .card-pad{padding:28px 24px 30px;}
+
+  .step{display:none;animation:slidein .42s cubic-bezier(.22,.9,.3,1);}
+  .step.on{display:block;}
+  @keyframes slidein{from{opacity:0;transform:translateX(14px);}to{opacity:1;transform:none;}}
+
+  .qcount{font-family:var(--display);font-weight:700;font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 12px;}
+  .qcount b{color:var(--indigo);}
+  .qtitle{font-family:var(--display);font-weight:800;font-size:clamp(23px,5.5vw,28px);letter-spacing:-.02em;line-height:1.14;margin:0 0 6px;color:var(--ink);}
+  .qhint{font-size:14px;color:var(--ink-soft);margin:0 0 22px;}
+  .qhint.micro{display:flex;gap:8px;align-items:flex-start;}
+  .qhint.micro svg{flex:0 0 auto;margin-top:2px;}
+  .foot-fine{font-size:12px;line-height:1.5;color:var(--ink-soft);margin:16px auto 0;max-width:30em;text-align:center;font-style:italic;opacity:.9;}
+
+  #s-start{text-align:center;padding:6px 0 2px;}
+  #s-start .qtitle{margin:0 0 8px;}
+  #s-start .qhint{margin:0 auto 22px;max-width:31em;}
+  #s-start .pills{text-align:left;}
+
+  /* choice pills */
+  .pills{display:grid;grid-template-columns:1fr;gap:10px;}
+  .pills.two{grid-template-columns:repeat(2,1fr);}
+  .pill{font-family:var(--display);font-weight:700;font-size:15.5px;color:var(--ink);background:#fff;border:1.5px solid var(--line);border-radius:13px;padding:16px 16px;text-align:left;cursor:pointer;transition:.16s;-webkit-tap-highlight-color:transparent;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:56px;}
+  .pill small{display:block;font-family:var(--body);font-weight:500;font-size:12.5px;color:var(--ink-soft);margin-top:2px;}
+  .pill:hover{border-color:var(--indigo);}
+  .pill:focus-visible{outline:3px solid var(--indigo);outline-offset:2px;}
+  .pill.sel{border-color:var(--indigo);background:var(--tint);}
+  .pill.big{padding:20px 18px;font-size:17px;}
+  .pill .arrow{color:var(--indigo);flex:0 0 auto;display:flex;}
+
+  /* money input + chips */
+  .money{position:relative;margin:4px 0 12px;}
+  .money .sym{position:absolute;left:18px;top:50%;transform:translateY(-50%);font-family:var(--display);font-weight:800;font-size:26px;color:var(--indigo);}
+  .money input{width:100%;font-family:var(--display);font-weight:800;font-size:32px;letter-spacing:-.02em;color:var(--ink);padding:16px 16px 16px 44px;border:1.5px solid var(--line);border-radius:13px;background:#fff;-webkit-appearance:none;appearance:none;}
+  .money input:focus-visible{outline:3px solid var(--indigo);outline-offset:1px;border-color:var(--indigo);}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 6px;}
+  .chip{font-family:var(--display);font-weight:700;font-size:13px;color:var(--ink);background:var(--tint);border:1px solid transparent;border-radius:999px;padding:8px 13px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+  .chip:hover{border-color:var(--indigo);}
+  .chip.sel{background:var(--deep);color:var(--soft);}
+  .chip:focus-visible{outline:3px solid var(--indigo);outline-offset:2px;}
+  .field-err{color:#B23B2E;font-size:13px;margin:6px 0 4px;display:none;}
+  .field-err.show{display:block;}
+  select.sel-input{width:100%;font-family:var(--body);font-size:16px;color:var(--ink);padding:15px 44px 15px 15px;border:1.5px solid var(--line);border-radius:12px;background:#fff;appearance:none;cursor:pointer;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%232F3E8F' stroke-width='2.2'><path d='M6 9l6 6 6-6'/></svg>");background-repeat:no-repeat;background-position:right 14px center;}
+  select.sel-input:focus-visible{outline:3px solid var(--indigo);outline-offset:2px;border-color:var(--indigo);}
+
+  /* age stepper */
+  .stepper{display:flex;align-items:center;gap:14px;margin:6px 0 14px;}
+  .stepper button{width:54px;height:54px;flex:0 0 auto;border-radius:50%;border:1.5px solid var(--line);background:#fff;font-size:26px;color:var(--ink);cursor:pointer;line-height:1;}
+  .stepper button:hover{border-color:var(--indigo);}
+  .stepper button:focus-visible{outline:3px solid var(--indigo);outline-offset:2px;}
+  .stepper .val{flex:1;text-align:center;font-family:var(--display);font-weight:800;font-size:38px;letter-spacing:-.02em;color:var(--ink);}
+  .stepper .val small{display:block;font-family:var(--body);font-weight:500;font-size:13px;color:var(--ink-soft);letter-spacing:0;}
+
+  /* buttons */
+  .row{display:flex;gap:12px;align-items:center;margin-top:24px;}
+  .btn{font-family:var(--display);font-weight:800;font-size:16px;letter-spacing:-.005em;border:none;border-radius:999px;padding:16px 24px;cursor:pointer;transition:.16s;-webkit-tap-highlight-color:transparent;}
+  .btn-go{background:var(--amber);color:var(--deep);flex:1;display:flex;align-items:center;justify-content:center;gap:8px;}
+  .btn-go:hover{background:var(--amber-dark);}
+  .btn-go:focus-visible{outline:3px solid var(--indigo);outline-offset:2px;}
+  .btn-back{background:transparent;border:none;color:var(--ink-soft);padding:16px 6px;font-weight:700;font-size:14px;font-family:var(--display);border-radius:8px;cursor:pointer;}
+  .btn-back:hover{color:var(--ink);}
+  .btn-back:focus-visible{outline:3px solid var(--indigo);outline-offset:2px;}
+  .btn-primary{background:var(--amber);color:var(--deep);font-size:16px;text-transform:uppercase;letter-spacing:.07em;padding:20px 24px;width:100%;display:flex;align-items:center;justify-content:center;gap:12px;box-shadow:0 14px 28px -14px rgba(0,0,0,.45);}
+  .btn-primary:hover{background:var(--amber-dark);transform:translateY(-1px);}
+  .btn-primary:focus-visible{outline:3px solid var(--indigo);outline-offset:2px;}
+  .btn-ghost{background:transparent;border:1.5px solid var(--line);color:var(--ink);width:100%;font-size:15px;padding:15px 20px;}
+  .btn-ghost:hover{border-color:var(--indigo);}
+  .btn-link{background:none;border:none;color:var(--indigo);font-family:var(--display);font-weight:700;font-size:13px;text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:6px 0;white-space:nowrap;}
+
+  /* gate + preview */
+  .gate-wrap{position:relative;min-height:520px;}
+  .preview{filter:blur(16px);opacity:.8;pointer-events:none;user-select:none;transition:filter .7s ease,opacity .7s ease;}
+  .preview.revealed{filter:none;opacity:1;pointer-events:auto;user-select:auto;}
+  .gate{position:absolute;inset:0;display:flex;align-items:flex-start;justify-content:center;padding:8px;transition:opacity .4s ease;z-index:2;}
+  .gate.hide{opacity:0;pointer-events:none;}
+  .gate-inner{background:var(--deep);color:var(--soft);border-radius:18px;padding:26px 22px 24px;width:100%;box-shadow:0 28px 60px -18px rgba(0,0,0,.6);position:sticky;top:12px;}
+  .gate-inner .lock{display:flex;align-items:center;gap:8px;font-family:var(--display);font-weight:700;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--amber);margin:0 0 12px;}
+  .gate-inner h3{font-family:var(--display);font-weight:800;font-size:22px;letter-spacing:-.02em;margin:0 0 6px;line-height:1.16;}
+  .gate-inner p{font-size:13.5px;color:var(--soft-dim);margin:0 0 18px;}
+  .gate-inner input[type=text],.gate-inner input[type=email],.gate-inner input[type=tel]{width:100%;font-family:var(--body);font-size:16px;color:var(--ink);padding:14px;border:none;border-radius:11px;margin-bottom:10px;background:var(--soft);}
+  .gate-inner input:focus-visible{outline:3px solid var(--amber);outline-offset:1px;}
+  .gate-inner input.invalid{box-shadow:0 0 0 2px #F58A6B;}
+  .name-row{display:flex;gap:10px;}
+  .name-row input{min-width:0;}
+  .consent{display:flex;gap:10px;align-items:flex-start;font-size:13px;line-height:1.5;color:var(--soft);margin:4px 0 14px;cursor:pointer;}
+  .consent input{width:22px;height:22px;flex:0 0 auto;margin:1px 0 0;accent-color:var(--amber);}
+  .gate-inner .err{color:#FFD3A8;font-size:12.5px;margin:-4px 0 10px;display:none;}
+  .gate-inner .err.show{display:block;}
+  .gate-inner .pre-submit{background:var(--tint);border-radius:12px;padding:12px 14px;margin:0 0 14px;font-size:13px;line-height:1.55;color:var(--ink-soft);text-align:left;}
+  .gate-inner .pre-submit b{color:var(--ink);}
+  .btn-reveal{background:var(--amber);color:var(--deep);width:100%;font-size:16px;padding:17px;margin-top:4px;text-transform:uppercase;letter-spacing:.06em;}
+  .btn-reveal:hover{background:var(--amber-dark);}
+  .btn-reveal:focus-visible{outline:3px solid var(--soft);outline-offset:2px;}
+  .gate-foot{font-size:11.5px;color:var(--soft-dim);text-align:center;margin:12px 0 0;line-height:1.55;}
+  .gate-foot a{color:var(--amber);text-decoration:underline;}
+
+  .loader{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 8px 14px;text-align:center;}
+  .spinner{position:relative;width:88px;height:88px;margin:4px 0 20px;}
+  .spinner svg{width:100%;height:100%;transform:rotate(-90deg);}
+  .spinner .track{fill:none;stroke:rgba(247,245,239,.15);stroke-width:4;}
+  .spinner .arc{fill:none;stroke:var(--amber);stroke-width:4;stroke-linecap:round;stroke-dasharray:125.6;stroke-dashoffset:125.6;filter:drop-shadow(0 0 5px rgba(242,165,65,.55));animation:fillring 2.6s cubic-bezier(.5,0,.2,1) forwards;}
+  .spinner .dollarpulse{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:800;font-size:30px;color:var(--amber);animation:pulsedollar 1s ease-in-out infinite;}
+  @keyframes fillring{to{stroke-dashoffset:0;}}
+  @keyframes pulsedollar{0%,100%{transform:scale(1);opacity:.85;}50%{transform:scale(1.14);opacity:1;}}
+  .loadmsg{font-family:var(--display);font-weight:700;font-size:15.5px;color:var(--soft);margin:0;min-height:1.4em;transition:opacity .25s ease;}
+
+  /* results */
+  .hstrip{position:sticky;top:0;z-index:3;background:var(--card);margin:-28px -24px 14px;padding:16px 24px 14px;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 14px;}
+  .hstrip .cap{font-family:var(--display);font-weight:700;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 3px;}
+  .hstrip .big{font-family:var(--display);font-weight:800;font-size:clamp(30px,8vw,40px);color:var(--indigo);letter-spacing:-.03em;line-height:1;}
+  .hstrip .sub{font-size:13px;color:var(--ink-soft);font-weight:600;margin:5px 0 0;}
+  .badge{display:inline-flex;align-items:center;gap:6px;font-family:var(--display);font-weight:800;font-size:12px;letter-spacing:.06em;text-transform:uppercase;padding:8px 12px;border-radius:999px;white-space:nowrap;flex:0 0 auto;background:var(--tint);color:var(--ink-soft);}
+  .badge.tracking{background:var(--ok-bg);color:var(--ok-ink);}
+  .badge.look{background:var(--warn-bg);color:var(--warn-ink);}
+  .badge.talk{background:var(--tint);color:var(--indigo);}
+  .badge i{width:8px;height:8px;border-radius:50%;background:currentColor;display:inline-block;}
+
+  .booking{margin:10px 0 0;text-align:center;}
+  .booking h3{font-family:var(--display);font-weight:800;font-size:clamp(22px,5.5vw,26px);letter-spacing:-.02em;margin:0 0 4px;color:var(--ink);}
+  .booking > p{font-size:14px;color:var(--ink-soft);margin:0 0 14px;}
+  .cal-embed{margin:14px 0 0;min-height:320px;border-radius:14px;overflow:hidden;background:#fff;border:1px solid var(--line);}
+  .callback{background:var(--tint);border-radius:14px;padding:16px;font-size:14px;color:var(--ink);margin:14px 0 0;line-height:1.5;}
+  .callback b{color:var(--ink);}
+  .demo-tag{display:inline-block;font-size:12px;color:var(--ink-soft);}
+  .booked{background:var(--ok-bg);border-radius:14px;padding:18px;color:var(--ok-ink);font-size:14.5px;line-height:1.55;margin:14px 0 0;text-align:left;}
+  .booked b{display:block;font-family:var(--display);font-weight:800;font-size:18px;margin-bottom:4px;}
+  .anchor{display:block;text-align:center;margin:18px 0 6px;font-family:var(--display);font-weight:700;font-size:14px;color:var(--indigo);}
+  .anchor a{color:inherit;text-decoration:underline;text-underline-offset:3px;}
+
+  /* mock booking calendar (static, demo only) */
+  .cal-mock{min-height:0;text-align:left;padding:16px 16px 18px;}
+  .cm-head{display:flex;gap:12px;align-items:center;padding:0 0 12px;border-bottom:1px solid var(--line);}
+  .cm-av{flex:0 0 40px;width:40px;height:40px;}
+  .cm-head b{display:block;font-family:var(--display);font-weight:800;font-size:15px;color:var(--ink);}
+  .cm-head span{display:block;font-size:12.5px;color:var(--ink-soft);}
+  .cm-note{font-size:12px;color:var(--ink-soft);margin:10px 0 12px;}
+  .cm-lab{font-family:var(--display);font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 8px;}
+  .cm-days{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:0 0 14px;}
+  .cm-day{border:1.5px solid var(--line);background:#fff;border-radius:11px;padding:8px 2px;cursor:pointer;text-align:center;color:var(--ink);-webkit-tap-highlight-color:transparent;min-width:0;}
+  .cm-day span{display:block;font-size:11px;font-weight:600;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.04em;}
+  .cm-day b{display:block;font-family:var(--display);font-weight:800;font-size:18px;line-height:1.2;}
+  .cm-day:hover{border-color:var(--indigo);}
+  .cm-day.sel{background:var(--indigo);border-color:var(--indigo);color:#fff;}
+  .cm-day.sel span{color:rgba(255,255,255,.8);}
+  .cm-day:focus-visible,.cm-slot:focus-visible{outline:3px solid var(--amber);outline-offset:2px;}
+  .cm-slots{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+  .cm-slot{border:1.5px solid var(--indigo);background:#fff;color:var(--indigo);border-radius:10px;padding:10px 4px;font-family:var(--display);font-weight:700;font-size:14px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+  .cm-slot:hover{background:var(--indigo);color:#fff;}
+
+  .sec-title{font-family:var(--display);font-weight:800;font-size:15px;letter-spacing:-.01em;color:var(--ink);border-bottom:2px solid var(--indigo);padding:26px 0 10px;margin:0 0 12px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:4px 10px;}
+  .sec-title span{font-family:var(--body);font-weight:500;font-size:11px;color:var(--ink-soft);}
+
+  .summary{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:0 0 14px;}
+  .summary .tile{background:var(--tint);border-radius:12px;padding:12px 13px;min-width:0;}
+  .summary .tile .l{font-size:11px;color:var(--ink-soft);font-weight:600;text-transform:uppercase;letter-spacing:.05em;}
+  .summary .tile .v{font-family:var(--display);font-weight:800;font-size:19px;color:var(--ink);letter-spacing:-.02em;margin-top:2px;}
+  .summary .tile.hi .v{color:var(--indigo);}
+
+  .circles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0 4px;}
+  .circle{text-align:center;min-width:0;}
+  .ring{position:relative;width:100%;max-width:120px;margin:0 auto;}
+  .ring svg{width:100%;height:auto;transform:rotate(-90deg);display:block;}
+  .ring .tr{fill:none;stroke:var(--tint);stroke-width:9;}
+  .ring .pr{fill:none;stroke:var(--indigo);stroke-width:9;stroke-linecap:round;stroke-dasharray:283;stroke-dashoffset:283;transition:stroke-dashoffset 1.1s cubic-bezier(.22,.9,.3,1);}
+  .ring.tracking .pr{stroke:var(--positive);}
+  .ring.look .pr{stroke:var(--amber);}
+  .ring.talk .pr{stroke:var(--indigo);}
+  .ring .mid{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:var(--display);font-weight:800;color:var(--ink);letter-spacing:-.02em;line-height:1.05;padding:0 8px;}
+  .ring .mid .b{font-size:clamp(16px,4.4vw,22px);}
+  .ring .mid .b.long{font-size:clamp(12px,3.3vw,16px);}
+  .ring .mid .s{font-family:var(--body);font-weight:600;font-size:10.5px;color:var(--ink-soft);margin-top:3px;letter-spacing:0;}
+  .circle .cl{font-family:var(--display);font-weight:800;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);margin:8px 0 0;}
+  .circle .cv{font-size:12.5px;color:var(--ink);font-weight:600;margin:2px 0 0;}
+
+  .pos{background:var(--tint);border-radius:14px;padding:16px;margin:14px 0 0;}
+  .pos h4{font-family:var(--display);font-weight:800;font-size:18px;letter-spacing:-.02em;margin:0 0 6px;color:var(--ink);}
+  .pos p{font-size:14px;color:var(--ink-soft);margin:0 0 6px;line-height:1.55;}
+  .pos p:last-child{margin-bottom:0;}
+  .pos.tracking{background:var(--ok-bg);}
+  .pos.look{background:var(--warn-bg);}
+  .pos.talk{background:#E6E9F6;}
+  .trig{list-style:none;margin:10px 0 6px;padding:0;}
+  .trig li{position:relative;padding:8px 0 8px 26px;font-size:14px;color:var(--ink);border-bottom:1px dashed rgba(28,35,64,.18);}
+  .trig li:last-child{border-bottom:none;}
+  .trig li::before{content:"";position:absolute;left:4px;top:15px;width:9px;height:9px;border-radius:50%;background:var(--amber);}
+
+  .ledger{margin:4px 0;}
+  .ledger .ln{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;border-bottom:1px dashed var(--line);font-size:14px;}
+  .ledger .ln:last-child{border-bottom:none;}
+  .ledger .ln .lab{color:var(--ink-soft);}
+  .ledger .ln .val{font-family:var(--display);font-weight:800;font-size:15px;color:var(--ink);white-space:nowrap;}
+  .ledger .ln.tot{background:var(--tint);border-radius:12px;padding:12px 14px;margin-top:6px;border-bottom:none;}
+  .ledger .ln.tot .lab{font-weight:700;color:var(--ink);}
+  .ledger .ln.tot .val{color:var(--indigo);font-size:17px;}
+  .fine{font-size:12.5px;color:var(--ink-soft);line-height:1.6;margin:12px 0 0;}
+  .disclaimer-card{font-size:12px;color:var(--ink-soft);line-height:1.65;border-top:1px solid var(--line);margin-top:20px;padding:16px 0 0;}
+  .again{margin:18px 0 0;}
+
+  /* what-if sliders */
+  .sliders{margin:16px 0 0;background:var(--tint);border-radius:14px;padding:14px 16px 6px;}
+  .sliders .lab{font-size:12.5px;color:var(--ink-soft);font-weight:600;margin:0 0 10px;display:flex;justify-content:space-between;align-items:center;gap:10px;}
+  .slider{margin:0 0 10px;}
+  .slider .top{display:flex;justify-content:space-between;gap:10px;font-family:var(--display);font-weight:700;font-size:13px;color:var(--ink);margin-bottom:2px;}
+  .slider .top b{color:var(--indigo);}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:8px;border-radius:8px;background:linear-gradient(90deg,var(--indigo) 0%,var(--indigo) var(--fill,40%),#fff var(--fill,40%),#fff 100%);outline:none;margin:8px 0 6px;border:1px solid var(--line);}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;border-radius:50%;background:var(--deep);border:4px solid #fff;box-shadow:0 3px 10px rgba(28,35,64,.4);cursor:grab;}
+  input[type=range]::-moz-range-thumb{width:24px;height:24px;border:4px solid #fff;border-radius:50%;background:var(--deep);box-shadow:0 3px 10px rgba(28,35,64,.4);cursor:grab;}
+  input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 4px var(--amber);}
+
+  /* projection chart */
+  .chart{margin:10px 0 4px;}
+  .chart svg{width:100%;height:auto;display:block;}
+  .chart .grid{stroke:var(--line);stroke-width:1;}
+  .chart .l1{fill:none;stroke:var(--indigo);stroke-width:3;stroke-linejoin:round;}
+  .chart .l2{fill:none;stroke:var(--amber);stroke-width:3;stroke-dasharray:6 5;stroke-linejoin:round;}
+  .chart .a1{fill:rgba(47,62,143,.10);}
+  .chart .mk{stroke:var(--ink-soft);stroke-width:1;stroke-dasharray:3 3;}
+  .chart text{font-family:var(--body);font-size:11px;fill:var(--ink-soft);font-weight:600;}
+  .legend{display:flex;gap:6px 16px;flex-wrap:wrap;font-size:12px;color:var(--ink-soft);font-weight:600;margin:4px 0 0;}
+  .legend i{display:inline-block;width:18px;height:3px;vertical-align:middle;margin-right:6px;background:var(--indigo);border-radius:2px;}
+  .legend i.alt{background:var(--amber);}
+
+  /* home-loan hand-off (demo stub) */
+  .handoff{margin:18px 0 0;background:var(--deep);color:var(--soft);border-radius:16px;padding:18px;}
+  .handoff h4{font-family:var(--display);font-weight:800;font-size:18px;margin:0 0 4px;letter-spacing:-.02em;}
+  .handoff p{font-size:13.5px;color:var(--soft-dim);margin:0 0 12px;}
+  .handoff .btn{background:var(--amber);color:var(--deep);width:100%;text-transform:uppercase;letter-spacing:.06em;}
+  .handoff .btn:hover{background:var(--amber-dark);}
+  .handoff .ho-note{margin:10px 0 0;font-size:12.5px;color:var(--soft-dim);}
+
+  /* explainer, disclaimer, footer */
+  .section{padding:14px 0;}
+  .seclead{font-family:var(--display);font-weight:800;font-size:clamp(24px,6vw,32px);letter-spacing:-.02em;line-height:1.12;margin:34px 0 18px;text-wrap:balance;color:var(--soft);}
+  .seclead em{color:var(--amber);font-style:normal;}
+  .steps{display:grid;gap:2px;}
+  .stepitem{display:grid;grid-template-columns:42px 1fr;gap:14px;padding:18px 0;border-top:1px solid var(--line-dark);align-items:start;}
+  .stepitem .no{font-family:var(--display);font-weight:800;color:var(--amber);font-size:15px;padding-top:2px;}
+  .stepitem h5{font-family:var(--display);font-weight:800;font-size:17px;margin:0 0 4px;letter-spacing:-.01em;color:var(--soft);}
+  .stepitem p{margin:0;font-size:14.5px;color:var(--soft-dim);}
+  .disclaimer{font-size:12px;color:var(--soft-dim);line-height:1.65;border-top:1px solid var(--line-dark);margin-top:8px;padding:20px 0 8px;}
+  .disclaimer b{color:var(--soft);}
+  footer{padding:8px 0 50px;font-size:12px;color:var(--soft-dim);}
+  footer .brand{margin:0 0 12px;}
+  footer .logo-mark{width:44px;height:44px;}
+  footer .wordmark{font-size:19px;}
+  .tagline{margin:0 0 8px;font-family:var(--display);font-weight:600;font-size:13px;color:var(--soft);}
+  .foottext{margin:0;}
+  .footlinks{display:flex;gap:18px;flex-wrap:wrap;margin-top:12px;}
+  .footlinks a{color:var(--amber);font-weight:600;text-decoration:none;font-size:12px;}
+  .footlinks a:hover{text-decoration:underline;}
+  .copyright{margin:14px 0 0;font-size:11.5px;}
+  .demo-note{margin:6px 0 0;font-size:11px;color:var(--soft-dim);opacity:.75;}
+
+  /* simulated AI-call notice (demo only: no call is placed) */
+  .callwrap{position:fixed;z-index:70;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));display:flex;justify-content:flex-end;pointer-events:none;}
+  .callwrap>*{pointer-events:auto;}
+  .callwrap.collapsed .callnote{display:none;}
+  .callwrap:not(.collapsed) .callbubble{display:none;}
+  .callnote{position:relative;width:100%;max-width:370px;display:flex;gap:12px;align-items:flex-start;background:var(--deep-2);color:var(--soft);border:1px solid var(--line-dark);border-radius:16px;padding:14px 40px 14px 14px;box-shadow:0 22px 48px -18px rgba(0,0,0,.7);animation:noteup .45s cubic-bezier(.22,.9,.3,1);}
+  @keyframes noteup{from{opacity:0;transform:translateY(16px) scale(.97);}to{opacity:1;transform:none;}}
+  @keyframes notedown{from{opacity:0;transform:translateY(-16px) scale(.97);}to{opacity:1;transform:none;}}
+  .callnote .cn-av{position:relative;flex:0 0 44px;width:44px;height:44px;border-radius:50%;background:var(--soft);display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:800;font-size:21px;color:var(--indigo);}
+  .callnote .cn-av .ai{position:absolute;right:-5px;bottom:-3px;background:var(--amber);color:var(--deep);font-family:var(--display);font-weight:800;font-size:9px;padding:2px 5px;border-radius:999px;border:2px solid var(--deep-2);}
+  .callnote .cn-tx{min-width:0;}
+  .callnote .cn-ttl{font-family:var(--display);font-weight:800;font-size:14.5px;line-height:1.25;margin:1px 0 3px;color:var(--soft);}
+  .callnote .cn-sub{font-size:12.5px;color:var(--soft-dim);line-height:1.45;margin:0;}
+  .callnote .cn-sub b{color:var(--amber);font-family:var(--display);font-weight:800;letter-spacing:.01em;}
+  .callnote .cn-demo{display:block;margin-top:3px;font-size:11.5px;opacity:.85;}
+  .callnote .cn-x{position:absolute;top:8px;right:8px;width:26px;height:26px;border:none;border-radius:50%;background:rgba(247,245,239,.12);color:var(--soft);font-size:15px;line-height:1;cursor:pointer;padding:0;}
+  .callnote .cn-x:hover{background:rgba(247,245,239,.22);}
+  .callbubble{position:relative;width:58px;height:58px;border-radius:50%;border:none;padding:0;cursor:pointer;background:var(--soft);box-shadow:0 16px 32px -10px rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;animation:noteup .35s ease;}
+  .callbubble .ini{font-family:var(--display);font-weight:800;font-size:24px;color:var(--indigo);}
+  .callbubble .ai{position:absolute;right:-3px;bottom:-1px;background:var(--amber);color:var(--deep);font-family:var(--display);font-weight:800;font-size:9px;padding:2px 5px;border-radius:999px;border:2px solid var(--soft);}
+  .callbubble .pulse{position:absolute;inset:0;border-radius:50%;border:2px solid var(--amber);animation:pingring 2.2s ease-out infinite;}
+  @keyframes pingring{0%{transform:scale(1);opacity:.7;}70%{transform:scale(1.5);opacity:0;}100%{opacity:0;}}
+  @media (min-width:561px){
+    .callwrap{left:auto;right:20px;top:20px;bottom:auto;}
+    .callnote{animation-name:notedown;}
+  }
+
+  @media (max-width:430px){
+    .card-pad{padding:22px 18px 24px;}
+    .hstrip{margin:-22px -18px 14px;padding:14px 18px 12px;}
+    .topbar{padding:14px 0 2px;}
+    .hero{padding:16px 0 2px;}
+    .pills.two{grid-template-columns:1fr;}
+    .circles{gap:4px;}
+    .cal-embed{margin:14px -6px 0;}
+    .cal-mock{padding:14px 12px 16px;}
+    .cm-days{gap:4px;}
+    .cm-slots{gap:6px;}
+    .logo-mark{width:32px;height:32px;}
+    .wordmark{font-size:15px;}
+    .phone{font-size:13px;padding:9px 13px;}
+  }
+  @media (max-width:360px){
+    .phone .phone-txt{display:none;}
+  }
+  @media (max-width:560px){
+    .copyright,.demo-note{padding-right:72px;} /* keeps the last lines clear of the fixed call bubble */
+  }
+  @media (min-width:600px){
+    .summary{grid-template-columns:repeat(3,1fr);}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important;scroll-behavior:auto;}
+    .spinner .arc{stroke-dashoffset:40;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="topbar">
+    <a class="brand" href="#" aria-label="Fernlight Advice home">
+      <svg class="logo-mark" viewBox="0 0 40 40" role="img" aria-label="Fernlight Advice logo" xmlns="http://www.w3.org/2000/svg"><rect width="40" height="40" rx="11" fill="#2F3E8F"/><path d="M8.5 28.5a8.5 8.5 0 0 1 17 0z" fill="#F2A541"/><path d="M17 16.5v-3M8.5 20l-2.1-2.1M25.5 20l2.1-2.1" stroke="#F2A541" stroke-width="2.2" stroke-linecap="round" fill="none"/><path d="M21.5 28.5c.4-7.8 4.4-13.6 11-16.4.6 7.6-3.3 13.9-11 16.4z" fill="#F7F5EF"/><path d="M22.8 27c2.1-4.1 4.6-7.4 7.5-9.9" stroke="#2F3E8F" stroke-width="1.3" stroke-linecap="round" fill="none"/><path d="M6.5 28.5h27" stroke="#F7F5EF" stroke-width="2" stroke-linecap="round"/></svg>
+      <span class="wordmark">Fernlight <span>Advice</span></span>
+    </a>
+    <a class="phone" href="#" aria-label="Call Fernlight Advice on (555) 010-0123 (demo number)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.7a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.4-1.1a2 2 0 0 1 2.1-.5c.9.3 1.8.5 2.7.6a2 2 0 0 1 1.7 2z"/></svg>
+      <span class="phone-txt">(555) 010-0123</span>
+    </a>
+  </div>
+
+  <header class="hero">
+    <p class="eyebrow">KiwiSaver check · no cost</p>
+    <h1>Where could your KiwiSaver <span class="lift">take you?</span></h1>
+    <p class="lede">General information to help you see the picture. It isn't personal financial advice.</p>
+  </header>
+
+  <main class="card" id="card">
+    <div class="card-rail"><i id="rail"></i></div>
+    <div class="card-pad">
+      <section class="step on" id="s-start" aria-label="Choose your goal"></section>
+      <section class="step" id="s-q" aria-live="polite"></section>
+      <section class="step" id="s-result">
+        <div class="gate-wrap">
+          <div class="preview" id="preview"></div>
+          <div class="gate" id="gate"></div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <section class="section">
+    <h2 class="seclead">What you'll <em>see at the end</em></h2>
+    <div class="steps">
+      <div class="stepitem"><div class="no">01</div><div><h5>Where your balance could get to</h5><p>Built up one year at a time on the same FMA-prescribed assumptions as your yearly statement, then turned into a weekly figure for retirement.</p></div></div>
+      <div class="stepitem"><div class="no">02</div><div><h5>How funds like yours have done</h5><p>The spread of five-year returns for your type of fund. Numbers only, no fund names, and a look back rather than a prediction.</p></div></div>
+      <div class="stepitem"><div class="no">03</div><div><h5>A check of your settings</h5><p>Your contribution rate, the government contribution and your fund type. Anything that stands out is simply stated; talking it over is for you and an adviser.</p></div></div>
+    </div>
+  </section>
+
+  <div class="disclaimer">
+    <b>Fernlight Advice is a fictional brand created for a portfolio.</b> Projections are illustrative and are not financial advice or a recommendation about any KiwiSaver scheme, fund or provider. Not affiliated with IRD, the FMA or any KiwiSaver provider. Questions about this demo: <span class="nowrap">(555) 010-0123</span>.
+  </div>
+
+  <footer>
+    <a class="brand" href="#" aria-label="Fernlight Advice home"><svg class="logo-mark" viewBox="0 0 40 40" role="img" aria-label="Fernlight Advice logo" xmlns="http://www.w3.org/2000/svg"><rect width="40" height="40" rx="11" fill="#2F3E8F"/><path d="M8.5 28.5a8.5 8.5 0 0 1 17 0z" fill="#F2A541"/><path d="M17 16.5v-3M8.5 20l-2.1-2.1M25.5 20l2.1-2.1" stroke="#F2A541" stroke-width="2.2" stroke-linecap="round" fill="none"/><path d="M21.5 28.5c.4-7.8 4.4-13.6 11-16.4.6 7.6-3.3 13.9-11 16.4z" fill="#F7F5EF"/><path d="M22.8 27c2.1-4.1 4.6-7.4 7.5-9.9" stroke="#2F3E8F" stroke-width="1.3" stroke-linecap="round" fill="none"/><path d="M6.5 28.5h27" stroke="#F7F5EF" stroke-width="2" stroke-linecap="round"/></svg><span class="wordmark">Fernlight <span>Advice</span></span></a>
+    <p class="tagline">Cover, KiwiSaver and home loans — one adviser.</p>
+    <p class="foottext">For New Zealanders who'd like a clearer view of where their KiwiSaver is going. KiwiSaver settings current to 7 September 2026.</p>
+    <div class="footlinks">
+      <a href="#">Disclosures</a>
+      <a href="#">Privacy Policy</a>
+    </div>
+    <p class="copyright">© 2026 Fernlight Advice</p>
+    <p class="demo-note">Demo landing page for portfolio purposes. Not a real business.</p>
+  </footer>
+
+</div>
+
+<div class="callwrap" id="callWrap" hidden></div>
+
+<script>
+/* Demo build: the whole check runs in this page. Answers and contact details
+   live in memory for this visit only and are discarded; nothing is posted,
+   tracked or stored. The booking calendar and the AI phone call are
+   simulated. */
+(function () {
+  'use strict';
+
+  /* ---- settings (illustrative 2026 KiwiSaver values) ---------------------- */
+  var SETTINGS = {
+    settings_as_at: '7 September 2026',
+    agent: { name: 'Remy', caller_id: '(555) 010-0188' },
+    contributions: {
+      default_employee_rate: 3.5,
+      default_employer_rate: 3.5,
+      statutory_minimum_employer_rate: 3.5,
+      selectable_employee_rates: [3, 3.5, 4, 6, 8, 10]
+    },
+    government_contribution: {
+      rate_per_dollar: 0.25, annual_maximum: 260.72, member_contribution_for_maximum: 1042.86,
+      income_cap: 180000, eligible_age_min: 16, eligible_age_max: 65
+    },
+    esct_table: { bands: [
+      { up_to: 18720, rate: 10.5 }, { up_to: 64200, rate: 17.5 }, { up_to: 93720, rate: 30 },
+      { up_to: 216000, rate: 33 }, { up_to: null, rate: 39 }
+    ] },
+    fma_assumptions: {
+      returns_by_fund_type: { defensive: 1.5, conservative: 2.5, balanced: 3.5, growth: 4.5, aggressive: 5.5 },
+      post_65_return: 2.5, wage_growth_pct: 0, inflation_pct: 0, display_in_todays_dollars: false
+    },
+    retirement: { default_retirement_age: 65, min_retirement_age_offset: 1, max_retirement_age: 75, drawdown_age_limit: 90 },
+    first_home: { min_balance_remaining: 1000, years_to_purchase_options: [1, 2, 3, 4, 5, '5+'], more_than_5_years_value: 7 },
+    fund_types: ['defensive', 'conservative', 'balanced', 'growth', 'aggressive'],
+    fund_type_labels: { defensive: 'Defensive', conservative: 'Conservative', balanced: 'Balanced', growth: 'Growth', aggressive: 'Aggressive' },
+    fund_helper: {
+      questions: [
+        { id: 'horizon', title: 'When will you need to use this money?', options: [
+          { label: 'Within 3 years', score: 0 }, { label: 'In 3 to 10 years', score: 1 }, { label: 'In over 10 years', score: 2 } ] },
+        { id: 'drop', title: 'Say your balance fell 15% over a year. What would you most likely do?', options: [
+          { label: 'Shift it to something lower-risk', score: 0 }, { label: 'Sit tight and wait it out', score: 1 }, { label: 'Add more while prices are down', score: 2 } ] },
+        { id: 'priority', title: "What's more important to you?", options: [
+          { label: 'A balance that stays steady', score: 0 }, { label: 'Somewhere in between', score: 1 }, { label: 'A balance that grows over the long run', score: 2 } ] }
+      ],
+      score_map: [
+        { max_score: 1, fund_type: 'defensive' }, { max_score: 2, fund_type: 'conservative' },
+        { max_score: 3, fund_type: 'balanced' }, { max_score: 5, fund_type: 'growth' }, { max_score: 6, fund_type: 'aggressive' }
+      ],
+      result_line: "Your answers line up with what's usually called a {fund_type} fund.",
+      result_note: "Treat this as a rough guide. Only your provider can tell you which fund you're really in."
+    },
+    five_year_returns: {
+      as_at: '31 March 2026',
+      by_fund_type: {
+        defensive: { average: 2.9, low: 2, high: 4.2, note: 'Published surveys group defensive funds with conservative ones, so this shows the conservative range.' },
+        conservative: { average: 2.9, low: 2, high: 4.2 },
+        balanced: { average: 4.9, low: 2.7, high: 8.2 },
+        growth: { average: 5.5, low: 2.4, high: 9.9 },
+        aggressive: { average: 7, low: 5.9, high: 8.1 }
+      }
+    },
+    providers: [
+      { value: 'bank', label: 'A bank-run scheme' },
+      { value: 'fund_manager', label: 'A specialist fund manager' },
+      { value: 'index', label: 'A low-fee index scheme' },
+      { value: 'platform', label: 'An investing app or platform' },
+      { value: 'workplace', label: 'A workplace or industry scheme' },
+      { value: 'other', label: 'Another provider' }
+    ],
+    triggers: { copy: {
+      rate_below_default: 'You put in {rate}% of your pay; the standard rate is now {default}%.',
+      below_full_government_contribution: "This year you're contributing less than the ${needed} it takes to get the full government contribution.",
+      employer_below_minimum: 'Your employer puts in {rate}%, below the {min}% minimum.',
+      fund_type_not_sure: "You don't know which fund your money is in.",
+      provider_not_sure: "You don't know which provider holds your KiwiSaver.",
+      income_above_cap: "With income over ${cap}, you don't get the government contribution."
+    } },
+    status_labels: { tracking: 'Looking good', look: 'Worth checking', talk: "Let's chat" },
+    status_headers: {
+      tracking: 'Nothing in your settings stands out.',
+      look: "There's one setting worth checking.",
+      talk: 'Several settings are worth talking through.'
+    },
+    copy: {
+      fma_line: "The projection applies the Financial Markets Authority's prescribed assumptions, the same ones behind your yearly KiwiSaver statement.",
+      settings_line: 'Settings current to {date}.',
+      returns_line: 'Over the five years to {date}, {fund_type} funds returned between {low}% and {high}% a year.',
+      returns_note: "Past returns only: they don't predict what happens next, and the projection above doesn't use them.",
+      super_note: "NZ Super is paid separately and isn't counted here.",
+      min_balance_note: 'If you qualify, at least $1,000 usually has to stay in your account.',
+      membership_note: "You'll usually need three years of KiwiSaver membership before a first-home withdrawal. We've carried on so the numbers are still here for you.",
+      slider_label: 'Drag these to explore what-ifs. None of this is a recommendation.',
+      talk_card_headline: 'A few of these are worth a proper conversation.',
+      talk_card_body: 'From your answers, more than one part of how your KiwiSaver is set up could be worth discussing. A Fernlight adviser can walk through each one with you.',
+      disclaimer: "This tool gives general information only. It isn't financial advice or a recommendation about any KiwiSaver scheme, fund or provider. Projections apply the Financial Markets Authority's prescribed assumptions and are estimates, not promises. Past returns don't indicate future performance. What you end up with depends on your contributions, your fund, fees, tax and how markets move. Talk to a financial adviser about your own situation.",
+      consent: "I'm happy for Fernlight Advice to get in touch about this request by phone, text and email."
+    }
+  };
+
+  var DEMO_TAG = '(demo — no call is placed)';
+
+  /* ---- projection engine ---------------------------------------------------- */
+  function num(v) { var n = Number(v); return isFinite(n) && n > 0 ? n : 0; }
+  function round2(n) { return Math.round(n * 100) / 100; }
+
+  function esctRate(s, income) {
+    var bands = s.esct_table.bands;
+    for (var i = 0; i < bands.length; i++) if (bands[i].up_to === null || income <= bands[i].up_to) return bands[i].rate;
+    return bands[bands.length - 1].rate;
+  }
+  function fundReturn(s, fundType) {
+    var r = s.fma_assumptions.returns_by_fund_type[fundType];
+    return typeof r === 'number' ? r : s.fma_assumptions.returns_by_fund_type.balanced;
+  }
+  function governmentContribution(s, member, income, age) {
+    var g = s.government_contribution;
+    if (income > num(g.income_cap)) return 0;
+    if (age < g.eligible_age_min || age > g.eligible_age_max) return 0;
+    return Math.min(member * g.rate_per_dollar, g.annual_maximum);
+  }
+  function projectYear(s, opening, age, o, yearIndex) {
+    var growth = 1 + (num(s.fma_assumptions.wage_growth_pct) / 100);
+    var income = o.income * Math.pow(growth, yearIndex);
+    var employed = o.employment_status === 'employed';
+    var member = employed ? income * o.employee_rate / 100 : num(o.voluntary_annual);
+    var esct = employed ? esctRate(s, income) : 0;
+    var employerGross = employed ? income * o.employer_rate / 100 : 0;
+    var employerNet = employerGross * (1 - esct / 100);
+    var govt = governmentContribution(s, member, income, age);
+    var rate = age >= s.retirement.default_retirement_age ? s.fma_assumptions.post_65_return : fundReturn(s, o.fund_type);
+    var closing = (opening + member + employerNet + govt) * (1 + rate / 100);
+    return { age: age, opening: opening, income: income, member: member, employer_gross: employerGross,
+      esct_rate: esct, employer_net: employerNet, government: govt, return_pct: rate, closing: closing };
+  }
+  function project(s, o, toAge, withdrawal) {
+    var rows = [], balance = num(o.current_balance);
+    var years = Math.max(0, Math.round(toAge - o.current_age));
+    for (var i = 0; i < years; i++) {
+      var age = o.current_age + i;
+      if (withdrawal && withdrawal.at_year === i) balance = Math.max(0, balance - withdrawal.amount);
+      var row = projectYear(s, balance, age, o, i);
+      rows.push(row);
+      balance = row.closing;
+    }
+    return { rows: rows, balance: balance };
+  }
+  function todaysDollars(s, nominal, years) {
+    if (!s.fma_assumptions.display_in_todays_dollars) return nominal;
+    return nominal / Math.pow(1 + num(s.fma_assumptions.inflation_pct) / 100, years);
+  }
+  function weeklyIncome(s, balance, retirementAge) {
+    var years = s.retirement.drawdown_age_limit - retirementAge;
+    if (years <= 0 || balance <= 0) return 0;
+    var r = s.fma_assumptions.post_65_return / 100;
+    var annual = r === 0 ? balance / years : balance * r / (1 - Math.pow(1 + r, -years));
+    return annual / 52;
+  }
+  function drawdown(s, balance, retirementAge) {
+    var rows = [], years = s.retirement.drawdown_age_limit - retirementAge;
+    var annual = weeklyIncome(s, balance, retirementAge) * 52;
+    var r = s.fma_assumptions.post_65_return / 100, b = balance;
+    for (var i = 0; i < years; i++) { b = (b - annual) * (1 + r); rows.push({ age: retirementAge + i + 1, closing: Math.max(0, b) }); }
+    return rows;
+  }
+  function deriveFundType(s, answers) {
+    var total = 0;
+    s.fund_helper.questions.forEach(function (q) {
+      var a = answers ? answers[q.id] : undefined;
+      total += (q.options[Number(a)] || q.options[1]).score;
+    });
+    var map = s.fund_helper.score_map;
+    for (var i = 0; i < map.length; i++) if (total <= map[i].max_score) return { fund_type: map[i].fund_type, score: total };
+    return { fund_type: map[map.length - 1].fund_type, score: total };
+  }
+  function triggers(s, o) {
+    var t = [], c = s.contributions, g = s.government_contribution, copy = s.triggers.copy;
+    var employed = o.employment_status === 'employed';
+    var ageEligible = o.current_age >= g.eligible_age_min && o.current_age <= g.eligible_age_max;
+    var memberAnnual = employed ? o.income * o.employee_rate / 100 : num(o.voluntary_annual);
+    if (employed && o.employee_rate < c.default_employee_rate)
+      t.push({ id: 'rate_below_default', text: copy.rate_below_default.replace('{rate}', o.employee_rate).replace('{default}', c.default_employee_rate) });
+    if (o.income > g.income_cap)
+      t.push({ id: 'income_above_cap', text: copy.income_above_cap.replace('{cap}', g.income_cap.toLocaleString('en-NZ')) });
+    else if (ageEligible && memberAnnual < g.member_contribution_for_maximum)
+      t.push({ id: 'below_full_government_contribution', text: copy.below_full_government_contribution.replace('{needed}', g.member_contribution_for_maximum.toLocaleString('en-NZ', { minimumFractionDigits: 2 })) });
+    if (employed && o.employer_rate < c.statutory_minimum_employer_rate)
+      t.push({ id: 'employer_below_minimum', text: copy.employer_below_minimum.replace('{rate}', o.employer_rate).replace('{min}', c.statutory_minimum_employer_rate) });
+    if (o.fund_type_not_sure) t.push({ id: 'fund_type_not_sure', text: copy.fund_type_not_sure });
+    if (o.provider_not_sure) t.push({ id: 'provider_not_sure', text: copy.provider_not_sure });
+    return t;
+  }
+  function normalise(input, s) {
+    var fundNotSure = !input.fund_type || input.fund_type === 'not_sure';
+    var derived = fundNotSure ? deriveFundType(s, input.fund_helper_answers) : null;
+    var providerNotSure = !input.provider || input.provider === 'not_sure';
+    var status = input.employment_status || 'employed';
+    var age = Math.round(num(input.current_age));
+    var retirementAge = Math.round(num(input.retirement_age)) || s.retirement.default_retirement_age;
+    retirementAge = Math.min(s.retirement.max_retirement_age, Math.max(age + s.retirement.min_retirement_age_offset, retirementAge));
+    var ytp = input.years_to_purchase;
+    if (ytp === '5+' || Number(ytp) > 5) ytp = s.first_home.more_than_5_years_value;
+    ytp = Math.max(1, Math.round(num(ytp) || 1));
+    var er = input.employer_rate;
+    return {
+      goal: input.goal === 'first_home' ? 'first_home' : 'retirement',
+      current_age: age, retirement_age: retirementAge, years_to_purchase: ytp,
+      employment_status: status, income: num(input.income), current_balance: num(input.current_balance),
+      fund_type: fundNotSure ? derived.fund_type : input.fund_type,
+      fund_type_derived: fundNotSure ? derived.fund_type : null,
+      fund_type_not_sure: fundNotSure,
+      employee_rate: status === 'employed' ? (num(input.employee_rate) || s.contributions.default_employee_rate) : 0,
+      employer_rate: status === 'employed' ? (er !== '' && er !== null && er !== undefined && isFinite(Number(er)) ? Number(er) : s.contributions.default_employer_rate) : 0,
+      voluntary_annual: status === 'employed' ? 0 : num(input.voluntary_annual),
+      provider_not_sure: providerNotSure,
+      member_3yr: input.member_3yr === true || input.member_3yr === 'yes'
+    };
+  }
+  function calculate(input, s) {
+    var o = normalise(input, s);
+    var toRetirement = project(s, o, o.retirement_age, null);
+    var yearsToRetirement = o.retirement_age - o.current_age;
+    var projected = todaysDollars(s, toRetirement.balance, yearsToRetirement);
+    var dd = drawdown(s, projected, o.retirement_age);
+    var trig = triggers(s, o);
+    var st = trig.length === 0 ? 'tracking' : trig.length === 1 ? 'look' : 'talk';
+    var fy = s.five_year_returns.by_fund_type[o.fund_type] || {};
+    var first = toRetirement.rows[0] || projectYear(s, o.current_balance, o.current_age, o, 0);
+    var r = {
+      goal: o.goal, status: st, status_label: s.status_labels[st], status_header: s.status_headers[st],
+      triggers: trig, current_age: o.current_age, retirement_age: o.retirement_age, years_to_retirement: yearsToRetirement,
+      employment_status: o.employment_status, income: o.income, current_balance: o.current_balance,
+      fund_type: o.fund_type, fund_type_label: s.fund_type_labels[o.fund_type], fund_type_derived: o.fund_type_derived,
+      employee_rate: o.employee_rate, employer_rate: o.employer_rate,
+      assumed_return: fundReturn(s, o.fund_type),
+      first_year: {
+        member: Math.round(first.member), employer_net: Math.round(first.employer_net), esct_rate: first.esct_rate,
+        government: round2(first.government),
+        total: Math.round(first.member + first.employer_net + first.government),
+        pct_of_income: o.income > 0 ? round2((first.member + first.employer_gross) / o.income * 100) : 0
+      },
+      projected_balance: Math.round(projected),
+      weekly_income: Math.round(weeklyIncome(s, projected, o.retirement_age)),
+      drawdown_age: s.retirement.drawdown_age_limit,
+      five_year: { average: fy.average, low: fy.low, high: fy.high, as_at: s.five_year_returns.as_at },
+      series: toRetirement.rows.map(function (x) { return { age: x.age + 1, balance: Math.round(x.closing) }; })
+        .concat(dd.map(function (x) { return { age: x.age, balance: Math.round(x.closing) }; })),
+      settings_as_at: s.settings_as_at
+    };
+    if (o.goal === 'first_home') {
+      var atPurchase = project(s, o, o.current_age + o.years_to_purchase, null).balance;
+      var available = Math.max(0, atPurchase - s.first_home.min_balance_remaining);
+      var withRows = project(s, o, o.retirement_age, { at_year: o.years_to_purchase, amount: available });
+      var after = todaysDollars(s, withRows.balance, yearsToRetirement);
+      r.years_to_purchase = o.years_to_purchase;
+      r.member_3yr = o.member_3yr;
+      r.balance_at_purchase = Math.round(atPurchase);
+      r.available_for_deposit = Math.round(available);
+      r.min_balance_remaining = s.first_home.min_balance_remaining;
+      r.retirement_balance_after_withdrawal = Math.round(after);
+      r.retirement_cost_of_withdrawal = Math.round(projected - after);
+      r.series_with_withdrawal = withRows.rows.map(function (x) { return { age: x.age + 1, balance: Math.round(x.closing) }; })
+        .concat(drawdown(s, after, o.retirement_age).map(function (x) { return { age: x.age, balance: Math.round(x.closing) }; }));
+    }
+    return r;
+  }
+
+  /* ---- helpers ------------------------------------------------------------- */
+  var $ = function (id) { return document.getElementById(id); };
+  function h(tag, attrs, children) {
+    var el = document.createElement(tag);
+    if (attrs) Object.keys(attrs).forEach(function (k) {
+      if (k === 'class') el.className = attrs[k];
+      else if (k === 'html') el.innerHTML = attrs[k];
+      else if (k === 'text') el.textContent = attrs[k];
+      else if (k.indexOf('on') === 0) el.addEventListener(k.slice(2), attrs[k]);
+      else if (attrs[k] !== null && attrs[k] !== undefined) el.setAttribute(k, attrs[k]);
+    });
+    (children || []).forEach(function (c) { if (c) el.appendChild(typeof c === 'string' ? document.createTextNode(c) : c); });
+    return el;
+  }
+  function fmt(n) { return Math.round(Number(n) || 0).toLocaleString('en-NZ'); }
+  function money(n) { return n === null || n === undefined ? '$•••' : '$' + fmt(n); }
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function yrs(n) { return n + (n === 1 ? ' year' : ' years'); }
+  var INFO_ICON = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2F3E8F" stroke-width="2.2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>';
+  var ARROW_ICON = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+
+  /* ---- state (memory only) ------------------------------------------------- */
+  var S = { answers: {}, choice: null, qi: 0, visible: [], booked: false, firstName: '' };
+
+  function show(id) {
+    document.querySelectorAll('.step').forEach(function (s) { s.classList.remove('on'); });
+    $(id).classList.add('on');
+    var top = $('card').getBoundingClientRect().top + window.scrollY - 12;
+    if (id !== 's-start') window.scrollTo({ top: top, behavior: 'smooth' });
+  }
+  function rail(pct) { $('rail').style.right = (100 - pct) + '%'; }
+
+  /* ---- start screen -------------------------------------------------------- */
+  var START = {
+    title: "What's your KiwiSaver working toward?",
+    sub: 'Roughly sixty seconds, start to finish.',
+    foot: 'General information only. Not personal financial advice.',
+    options: [
+      { id: 'first_home', label: 'My first home', sub: 'See what you might be able to withdraw for a deposit' },
+      { id: 'retirement', label: 'Retirement', sub: 'See where your balance could land' }
+    ]
+  };
+  function buildStart() {
+    var sec = $('s-start');
+    sec.innerHTML = '';
+    sec.appendChild(h('h2', { class: 'qtitle', text: START.title }));
+    sec.appendChild(h('p', { class: 'qhint', text: START.sub }));
+    var pills = h('div', { class: 'pills' });
+    START.options.forEach(function (o) {
+      pills.appendChild(h('button', { class: 'pill big', type: 'button', onclick: function () { pick(o.id, this); } }, [
+        h('span', { html: esc(o.label) + '<small>' + esc(o.sub) + '</small>' }),
+        h('span', { class: 'arrow', html: ARROW_ICON })
+      ]));
+    });
+    sec.appendChild(pills);
+    sec.appendChild(h('p', { class: 'foot-fine', text: START.foot }));
+  }
+  function pick(id, el) {
+    S.choice = id;
+    S.answers = {};
+    document.querySelectorAll('#s-start .pill').forEach(function (p) { p.classList.remove('sel'); });
+    if (el) el.classList.add('sel');
+    setTimeout(function () { goto(0); }, 160);
+  }
+
+  /* ---- questions ----------------------------------------------------------- */
+  function questions(goal) {
+    var s = SETTINGS, c = s.contributions;
+    var rates = c.selectable_employee_rates.map(function (r) {
+      return { value: r, label: r + '%', sub: r === c.default_employee_rate ? 'Standard rate' : (r < c.default_employee_rate ? 'Temporary lower rate' : null) };
+    });
+    var fundOpts = s.fund_types.map(function (f) { return { value: f, label: s.fund_type_labels[f] }; })
+      .concat([{ value: 'not_sure', label: "I don't know", sub: "Answer three short questions and we'll estimate it" }]);
+    var helper = s.fund_helper.questions.map(function (q) {
+      return { id: 'fh_' + q.id, type: 'choice', title: q.title,
+        showIf: function (a) { return a.fund_type === 'not_sure'; },
+        options: q.options.map(function (o, i) { return { value: i, label: o.label }; }),
+        onPick: function (v, a) { a.fund_helper_answers = a.fund_helper_answers || {}; a.fund_helper_answers[q.id] = v; } };
+    });
+    var list = [
+      { id: 'current_age', type: 'int', title: "What's your age today?", min: 16, max: 74, default: 35, sub: 'years old' }
+    ];
+    if (goal === 'retirement') {
+      list.push({ id: 'retirement_age', type: 'int', title: 'At what age would you like to stop work?',
+        hint: '65 is the usual answer, but choose the age that suits your plans.',
+        min: 50, max: s.retirement.max_retirement_age, default: s.retirement.default_retirement_age, sub: 'planned retirement age',
+        validate: function (v, a) { return v <= a.current_age ? 'Your retirement age has to be later than your age today.' : null; } });
+    } else {
+      list.push({ id: 'years_to_purchase', type: 'choice', title: 'When are you hoping to buy?',
+        options: s.first_home.years_to_purchase_options.map(function (y) {
+          return { value: y, label: y === '5+' ? 'Over 5 years away' : (y === 1 ? 'In the next 12 months' : 'Roughly ' + y + ' years') };
+        }) });
+      list.push({ id: 'member_3yr', type: 'yesno', title: 'Have you belonged to KiwiSaver for three years or more?',
+        hint: "A first-home withdrawal usually needs three years of membership. Either answer is fine; you'll still see the numbers." });
+    }
+    list.push(
+      { id: 'employment_status', type: 'choice', title: "What's your work situation?", options: [
+        { value: 'employed', label: 'Working for an employer', sub: 'Paid wages or a salary' },
+        { value: 'self_employed', label: 'Working for myself' },
+        { value: 'not_working', label: 'Not working at the moment' } ] },
+      { id: 'income', type: 'money', title: "Roughly what's your yearly income before tax?", hint: 'A ballpark number works.',
+        chips: [50000, 70000, 90000, 120000, 160000], min: 0, optional: true,
+        showIf: function (a) { return a.employment_status !== 'not_working'; } },
+      { id: 'voluntary_annual', type: 'money', title: 'What do you contribute on your own each year?',
+        hint: "Any voluntary top-ups you make. Put 0 if you don't.",
+        chips: [{ label: 'Nothing extra', value: 0 }, 1043, 2000, 5000], optional: true,
+        showIf: function (a) { return a.employment_status !== 'employed'; } },
+      { id: 'current_balance', type: 'money', title: 'How much is in your KiwiSaver now?',
+        hint: "Check your provider's app or your latest statement. Close enough is fine.",
+        chips: [10000, 25000, 50000, 100000, 150000], min: 0,
+        required_msg: "Add your current balance. Enter 0 if you're only just starting out." },
+      { id: 'fund_type', type: 'choice', title: 'Which kind of fund is your money in?', hint: "Your statement will say. It's fine if you don't know.", options: fundOpts }
+    );
+    list = list.concat(helper);
+    list.push({ id: 'fh_result', type: 'info', title: 'What your answers point to', next: 'Sounds good →',
+      showIf: function (a) { return a.fund_type === 'not_sure' && a.fund_helper_answers; },
+      html: function (a) {
+        var d = deriveFundType(SETTINGS, a.fund_helper_answers);
+        return '<h4>' + esc(SETTINGS.fund_helper.result_line.replace('{fund_type}', SETTINGS.fund_type_labels[d.fund_type])) + '</h4><p>' + esc(SETTINGS.fund_helper.result_note) + '</p>';
+      } });
+    list.push(
+      { id: 'employee_rate', type: 'choice', title: 'What percentage of your pay goes in?',
+        hint: 'Taken from each pay. The standard rate is ' + c.default_employee_rate + '%.', options: rates,
+        showIf: function (a) { return a.employment_status === 'employed'; } },
+      { id: 'employer_rate', type: 'choice', title: 'What does your employer put in?',
+        hint: 'Employers have to contribute at least ' + c.statutory_minimum_employer_rate + '%.',
+        options: [{ value: 3, label: '3%' }, { value: 3.5, label: '3.5%', sub: 'Legal minimum' }, { value: 4, label: '4%' },
+          { value: 6, label: '6% or higher' }, { value: '', label: "Don't know", sub: "We'll use the minimum" }],
+        showIf: function (a) { return a.employment_status === 'employed'; } },
+      { id: 'provider', type: 'select', title: 'Which provider holds your KiwiSaver?',
+        hint: "Only your adviser would see this. This page never compares providers.",
+        options: SETTINGS.providers.concat([{ value: 'not_sure', label: "I'm not sure" }]), placeholder: 'Pick a provider…' }
+    );
+    return list;
+  }
+
+  function visibleQuestions() {
+    return questions(S.choice).filter(function (q) { return !q.showIf || q.showIf(S.answers); });
+  }
+  function goto(i) {
+    S.visible = visibleQuestions();
+    if (i < 0) { show('s-start'); rail(0); return; }
+    if (i >= S.visible.length) return toGate();
+    S.qi = i;
+    renderQuestion(S.visible[i], i, S.visible.length);
+    rail(Math.round(((i + 1) / (S.visible.length + 1)) * 100));
+    show('s-q');
+  }
+  function next() { goto(S.qi + 1); }
+  function back() { goto(S.qi - 1); }
+
+  function renderQuestion(q, i, n) {
+    var sec = $('s-q');
+    sec.innerHTML = '';
+    sec.appendChild(h('p', { class: 'qcount', html: '<b>Step ' + (i + 1) + '</b> of ' + n }));
+    sec.appendChild(h('h2', { class: 'qtitle', text: q.title }));
+    if (q.hint) sec.appendChild(h('p', { class: 'qhint micro', html: INFO_ICON + '<span>' + esc(q.hint) + '</span>' }));
+    var body = h('div');
+    sec.appendChild(body);
+    var err = h('p', { class: 'field-err', role: 'alert' });
+    var needsNext = true;
+    var validate = function () {
+      var v = S.answers[q.id];
+      if (q.type === 'info') return null;
+      if (!q.optional && (v === undefined || v === null || v === '')) return q.required_msg || 'Choose an answer to keep going.';
+      if (q.validate) return q.validate(v, S.answers);
+      if (q.min !== undefined && v !== '' && v !== undefined && Number(v) < q.min) return 'The lowest amount allowed is $' + fmt(q.min) + '.';
+      if (q.max !== undefined && Number(v) > q.max) return 'That number seems high. Could you double-check it?';
+      return null;
+    };
+
+    if (q.type === 'choice' || q.type === 'yesno') {
+      var opts = q.type === 'yesno' ? [{ value: 'yes', label: 'Yes' }, { value: 'no', label: 'No' }] : q.options;
+      var two = opts.length <= 6 && opts.every(function (o) { return !o.sub && String(o.label).length < 16; });
+      var pills = h('div', { class: 'pills' + (two ? ' two' : '') });
+      opts.forEach(function (o) {
+        var b = h('button', { class: 'pill' + (S.answers[q.id] === o.value ? ' sel' : ''), type: 'button', onclick: function () {
+          S.answers[q.id] = o.value;
+          pills.querySelectorAll('.pill').forEach(function (p) { p.classList.remove('sel'); });
+          b.classList.add('sel');
+          if (q.onPick) q.onPick(o.value, S.answers);
+          setTimeout(next, 170);
+        } }, [h('span', { html: esc(o.label) + (o.sub ? '<small>' + esc(o.sub) + '</small>' : '') })]);
+        pills.appendChild(b);
+      });
+      body.appendChild(pills);
+      needsNext = false;
+    }
+    if (q.type === 'money') {
+      body.appendChild(moneyInput(q, S.answers[q.id], function (v) { S.answers[q.id] = v; err.classList.remove('show'); },
+        function () { var e = validate(); if (e) { err.textContent = e; err.classList.add('show'); return; } next(); }));
+      if (q.chips) {
+        var chips = h('div', { class: 'chips' });
+        q.chips.forEach(function (c) {
+          var val = typeof c === 'object' ? c.value : c, lab = typeof c === 'object' ? c.label : '$' + fmt(c);
+          chips.appendChild(h('button', { class: 'chip' + (S.answers[q.id] === val ? ' sel' : ''), type: 'button', onclick: function () {
+            S.answers[q.id] = val;
+            body.querySelector('input').value = fmt(val);
+            chips.querySelectorAll('.chip').forEach(function (x) { x.classList.remove('sel'); });
+            this.classList.add('sel');
+            err.classList.remove('show');
+            var e = validate(); if (e) { err.textContent = e; err.classList.add('show'); return; }
+            setTimeout(next, 170);
+          } }, [lab]));
+        });
+        body.appendChild(chips);
+      }
+    }
+    if (q.type === 'int') {
+      if (S.answers[q.id] === undefined) S.answers[q.id] = q.default !== undefined ? q.default : q.min || 0;
+      var valEl = h('div', { class: 'val num', 'aria-live': 'polite' });
+      var draw = function () { valEl.innerHTML = esc(S.answers[q.id]) + (q.sub ? '<small>' + esc(q.sub) + '</small>' : ''); err.classList.remove('show'); };
+      body.appendChild(h('div', { class: 'stepper' }, [
+        h('button', { type: 'button', 'aria-label': 'Decrease', onclick: function () { S.answers[q.id] = Math.max(q.min || 0, S.answers[q.id] - 1); draw(); } }, ['−']),
+        valEl,
+        h('button', { type: 'button', 'aria-label': 'Increase', onclick: function () { S.answers[q.id] = Math.min(q.max || 99, S.answers[q.id] + 1); draw(); } }, ['+'])
+      ]));
+      draw();
+    }
+    if (q.type === 'select') {
+      var sel = h('select', { class: 'sel-input', 'aria-label': q.title, onchange: function () { S.answers[q.id] = this.value; err.classList.remove('show'); setTimeout(next, 140); } });
+      sel.appendChild(h('option', { value: '', disabled: '', selected: S.answers[q.id] ? null : '' }, [q.placeholder || 'Select…']));
+      q.options.forEach(function (o) { sel.appendChild(h('option', { value: o.value, selected: S.answers[q.id] === o.value ? '' : null }, [o.label])); });
+      body.appendChild(sel);
+      needsNext = false;
+    }
+    if (q.type === 'info') body.appendChild(h('div', { class: 'pos', html: q.html(S.answers) }));
+
+    sec.appendChild(err);
+    var row = h('div', { class: 'row' }, [h('button', { class: 'btn-back', type: 'button', onclick: back }, ['← Back'])]);
+    if (needsNext) row.appendChild(h('button', { class: 'btn btn-go', type: 'button', onclick: function () {
+      var e = validate(); if (e) { err.textContent = e; err.classList.add('show'); return; } next();
+    } }, [q.next || 'Continue →']));
+    sec.appendChild(row);
+    if (q.type === 'money') { var inp = body.querySelector('input'); setTimeout(function () { try { inp.focus({ preventScroll: true }); } catch (e) {} }, 380); }
+  }
+
+  function moneyInput(q, value, onChange, onEnter) {
+    var wrap = h('div', { class: 'money' });
+    var inp = h('input', { type: 'text', inputmode: 'numeric', autocomplete: 'off', placeholder: '0', 'aria-label': q.title });
+    if (value !== undefined && value !== null && value !== '') inp.value = fmt(value);
+    inp.addEventListener('input', function () {
+      var raw = inp.value.replace(/[^\d.]/g, '');
+      var n = raw === '' ? '' : Math.round(Number(raw));
+      inp.value = n === '' ? '' : fmt(n);
+      onChange(n);
+    });
+    inp.addEventListener('keydown', function (e) { if (e.key === 'Enter' && onEnter) { e.preventDefault(); onEnter(); } });
+    wrap.appendChild(h('span', { class: 'sym', text: '$', 'aria-hidden': 'true' }));
+    wrap.appendChild(inp);
+    return wrap;
+  }
+
+  /* ---- opt-in gate (demo: validates, then discards) ------------------------ */
+  function toGate() {
+    rail(100);
+    renderResultShell($('preview'), null);
+    var gate = $('gate');
+    gate.classList.remove('hide');
+    gate.innerHTML = '';
+    var a = SETTINGS.agent;
+    var form = h('div', { id: 'gateForm' }, [
+      h('p', { class: 'lock', html: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Projection ready' }),
+      h('h3', { text: 'Your numbers are ready to view' }),
+      h('p', { text: 'Add your details below to unlock them.' }),
+      h('div', { class: 'name-row' }, [
+        h('input', { type: 'text', id: 'fFirst', placeholder: 'First name', 'aria-label': 'First name', autocomplete: 'given-name' }),
+        h('input', { type: 'text', id: 'fLast', placeholder: 'Last name', 'aria-label': 'Last name', autocomplete: 'family-name' })
+      ]),
+      h('input', { type: 'email', id: 'fEmail', placeholder: 'Email address', 'aria-label': 'Email address', autocomplete: 'email', inputmode: 'email' }),
+      h('input', { type: 'tel', id: 'fPhone', placeholder: 'Mobile number', 'aria-label': 'Mobile number', autocomplete: 'tel', inputmode: 'tel' }),
+      h('label', { class: 'consent' }, [h('input', { type: 'checkbox', id: 'fConsent' }), h('span', { text: SETTINGS.copy.consent })]),
+      h('p', { class: 'err', id: 'formErr', role: 'alert' }),
+      h('p', { class: 'pre-submit', html: "If you don't book a time online, <b>" + esc(a.name) + '</b>, our AI assistant, would ring you from <b>' + esc(a.caller_id) + '</b> to go over your results and connect you with an adviser ' + esc(DEMO_TAG) + ". Free, and you're under no obligation." }),
+      h('button', { class: 'btn btn-reveal', type: 'button', onclick: function (e) { if (e && e.preventDefault) e.preventDefault(); submit(readForm()); } }, ['Unlock my projection']),
+      h('p', { class: 'gate-foot', html: 'Read our <a href="#">Privacy Policy</a>. Your details are never sold. General information, not personal financial advice.' })
+    ]);
+    gate.appendChild(h('div', { class: 'gate-inner' }, [form, loaderEl()]));
+    ['fFirst', 'fLast', 'fEmail', 'fPhone'].forEach(function (id) { $(id).addEventListener('input', function () { this.classList.remove('invalid'); }); });
+    show('s-result');
+  }
+  function loaderEl() {
+    return h('div', { class: 'loader', id: 'loader', hidden: '' }, [
+      h('div', { class: 'spinner', html: '<svg viewBox="0 0 50 50" aria-hidden="true"><circle class="track" cx="25" cy="25" r="20"/><circle class="arc" cx="25" cy="25" r="20"/></svg><span class="dollarpulse">$</span>' }),
+      h('p', { class: 'loadmsg', id: 'loadMsg', text: 'Running your balance forward…' })
+    ]);
+  }
+  function validEmail(e) { return /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/.test(e); }
+  function validPhone(p) { var d = p.replace(/\D/g, ''); if (d.indexOf('64') === 0) d = d.slice(2); d = d.replace(/^0+/, ''); return d.length >= 7 && d.length <= 11; }
+  function readForm() {
+    var c = { first: $('fFirst').value.trim(), last: $('fLast').value.trim(), email: $('fEmail').value.trim(), phone: $('fPhone').value.trim() };
+    var bad = { fFirst: c.first.length < 2, fLast: c.last.length < 1, fEmail: !validEmail(c.email), fPhone: !validPhone(c.phone) };
+    Object.keys(bad).forEach(function (id) { $(id).classList[bad[id] ? 'add' : 'remove']('invalid'); });
+    var err = $('formErr');
+    if (bad.fFirst || bad.fLast || bad.fEmail || bad.fPhone) { err.textContent = 'Fill in your first and last name, a working email and a mobile number.'; err.classList.add('show'); return null; }
+    if (!$('fConsent').checked) { err.textContent = 'Tick the box to let Fernlight Advice contact you about this request.'; err.classList.add('show'); return null; }
+    err.classList.remove('show');
+    return c;
+  }
+
+  function submit(contact) {
+    if (!contact) return;
+    S.firstName = contact.first;   // kept in memory only, for the call-notice greeting
+    // Demo: the details are checked, then discarded. The projection is worked
+    // out here in the page; nothing is posted, tracked or stored.
+    $('gateForm').hidden = true;
+    $('loader').hidden = false;
+    var msgs = ['Running your balance forward, year by year…', 'Looking over your settings…', 'Almost done…'];
+    var i = 0, msgEl = $('loadMsg');
+    msgEl.textContent = msgs[0];
+    var iv = setInterval(function () { i++; if (i < msgs.length) { msgEl.style.opacity = 0; setTimeout(function () { msgEl.textContent = msgs[i]; msgEl.style.opacity = 1; }, 200); } }, 900);
+    var snap = calculate(Object.assign({}, S.answers, { goal: S.choice }), SETTINGS);
+    setTimeout(function () { clearInterval(iv); reveal(snap); }, 2400);
+  }
+
+  /* ---- result screen ------------------------------------------------------- */
+  function headline(snap) {
+    var goal = snap ? snap.goal : S.choice;
+    if (goal === 'first_home') return {
+      label: snap ? 'Toward a deposit in ' + yrs(snap.years_to_purchase) : 'Toward your deposit',
+      value: snap ? money(snap.available_for_deposit) : '$••,•••',
+      sub: 'Left for retirement after withdrawing: ' + (snap ? money(snap.retirement_balance_after_withdrawal) : '$•••,•••')
+    };
+    return {
+      label: snap ? 'Your balance at ' + snap.retirement_age + ' could be' : 'Your balance at retirement could be',
+      value: snap ? money(snap.projected_balance) : '$•••,•••',
+      sub: snap ? 'Roughly ' + money(snap.weekly_income) + ' a week through to age ' + snap.drawdown_age : 'Roughly $••• a week through to age 90'
+    };
+  }
+
+  function renderResultShell(rootEl, snap) {
+    rootEl.innerHTML = '';
+    var hl = headline(snap);
+    rootEl.appendChild(h('div', { class: 'hstrip' }, [
+      h('div', {}, [h('p', { class: 'cap', text: hl.label }), h('div', { class: 'big num', text: hl.value }), h('p', { class: 'sub', text: hl.sub })]),
+      h('span', { class: 'badge ' + (snap ? snap.status : ''), html: '<i></i>' + esc(snap ? snap.status_label : '•••••') })
+    ]));
+    var booking = h('div', { class: 'booking', id: 'booking' });
+    var snapshot = h('div', { id: 'snapshot' });
+    var anchor = h('p', { class: 'anchor', html: 'Want the numbers before you book? <a href="#snapshot">Jump to my results</a>' });
+    var extras = h('div', { id: 'extras' });
+    var disc = h('div', { class: 'disclaimer-card', text: SETTINGS.copy.disclaimer });
+    var again = h('div', { class: 'again' }, [h('button', { class: 'btn btn-ghost', type: 'button', onclick: function () { window.location.href = window.location.pathname; } }, ['Start over'])]);
+    [booking, anchor, snapshot, extras, disc, again].forEach(function (x) { rootEl.appendChild(x); });
+    renderSnapshot(snapshot, snap);
+    renderExtras(extras, snap);
+    buildBooking(booking, snap);
+  }
+
+  function reveal(snap) {
+    var pv = $('preview');
+    renderResultShell(pv, snap);
+    $('gate').classList.add('hide');
+    pv.classList.add('revealed');
+    setTimeout(function () { pv.querySelectorAll('.ring .pr').forEach(function (p) { p.style.strokeDashoffset = p.getAttribute('data-off'); }); }, 60);
+    armCallNote();
+    var top = $('card').getBoundingClientRect().top + window.scrollY - 8;
+    window.scrollTo({ top: top, behavior: 'smooth' });
+  }
+
+  function tile(l, v, hi) { return h('div', { class: 'tile' + (hi ? ' hi' : '') }, [h('div', { class: 'l', text: l }), h('div', { class: 'v num', text: v })]); }
+  function ln(l, v, tot) { return h('div', { class: 'ln' + (tot ? ' tot' : '') }, [h('span', { class: 'lab', text: l }), h('span', { class: 'val num', text: v })]); }
+  function circle(label, ringEl, val) { return h('div', { class: 'circle' }, [ringEl, h('p', { class: 'cl', text: label }), val ? h('p', { class: 'cv', text: val }) : null]); }
+  function ring(pct, big, small, cls) {
+    var p = pct === null || pct === undefined ? 0 : Math.max(0, Math.min(100, pct));
+    var off = 283 - (283 * p / 100);
+    return h('div', { class: 'ring ' + (cls || '') }, [
+      h('div', { html: '<svg viewBox="0 0 100 100" aria-hidden="true"><circle class="tr" cx="50" cy="50" r="45"/><circle class="pr" cx="50" cy="50" r="45" data-off="' + off + '"/></svg>' }),
+      h('div', { class: 'mid' }, [h('span', { class: 'b num' + (String(big).length > 8 ? ' long' : ''), text: big }), small ? h('span', { class: 's', text: small }) : null])
+    ]);
+  }
+
+  function chart(snap) {
+    var W = 560, H = 230, L = 44, R = 12, T = 14, B = 30;
+    var s1 = snap.series, s2 = snap.series_with_withdrawal;
+    var all = s1.concat(s2 || []);
+    var minAge = Math.min.apply(null, all.map(function (p) { return p.age; })) - 1;
+    var maxAge = Math.max.apply(null, all.map(function (p) { return p.age; }));
+    var maxV = Math.max(1, Math.max.apply(null, all.map(function (p) { return p.balance; }))) * 1.08;
+    var x = function (age) { return L + (age - minAge) / (maxAge - minAge) * (W - L - R); };
+    var y = function (v) { return T + (1 - v / maxV) * (H - T - B); };
+    var path = function (ser) { return ser.map(function (p, i) { return (i ? 'L' : 'M') + x(p.age).toFixed(1) + ',' + y(p.balance).toFixed(1); }).join(' '); };
+    var start = { age: minAge, balance: snap.current_balance };
+    var d1 = path([start].concat(s1));
+    var area = d1 + ' L' + x(s1[s1.length - 1].age).toFixed(1) + ',' + y(0) + ' L' + x(minAge).toFixed(1) + ',' + y(0) + ' Z';
+    var g = '';
+    for (var i = 0; i <= 4; i++) {
+      var v = maxV / 4 * i;
+      g += '<line class="grid" x1="' + L + '" x2="' + (W - R) + '" y1="' + y(v).toFixed(1) + '" y2="' + y(v).toFixed(1) + '"/><text x="' + (L - 6) + '" y="' + (y(v) + 4).toFixed(1) + '" text-anchor="end">$' + (v >= 1000000 ? (v / 1000000).toFixed(1) + 'm' : Math.round(v / 1000) + 'k') + '</text>';
+    }
+    var ticks = '';
+    for (var a = Math.ceil(minAge / 5) * 5; a <= maxAge; a += 5) ticks += '<text x="' + x(a).toFixed(1) + '" y="' + (H - 8) + '" text-anchor="middle">' + a + '</text>';
+    var mk = '<line class="mk" x1="' + x(snap.retirement_age).toFixed(1) + '" x2="' + x(snap.retirement_age).toFixed(1) + '" y1="' + T + '" y2="' + (H - B) + '"/><text x="' + (x(snap.retirement_age) + 4).toFixed(1) + '" y="' + (T + 10) + '">retire at ' + snap.retirement_age + '</text>';
+    if (snap.goal === 'first_home') {
+      var wa = snap.current_age + snap.years_to_purchase;
+      mk += '<line class="mk" x1="' + x(wa).toFixed(1) + '" x2="' + x(wa).toFixed(1) + '" y1="' + T + '" y2="' + (H - B) + '"/><text x="' + (x(wa) + 4).toFixed(1) + '" y="' + (T + 24) + '">deposit out</text>';
+    }
+    var l2 = s2 ? '<path class="l2" d="' + path([start].concat(s2)) + '"/>' : '';
+    return '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Chart of your projected KiwiSaver balance at each age">' + g + '<path class="a1" d="' + area + '"/><path class="l1" d="' + d1 + '"/>' + l2 + mk + ticks + '</svg>';
+  }
+
+  function renderSnapshot(el, snap) {
+    var s = SETTINGS;
+    var goal = snap ? snap.goal : (S.choice || 'retirement');
+    var m = function (v) { return snap ? money(v) : '$•••'; };
+    el.appendChild(h('div', { class: 'sec-title', html: 'Your KiwiSaver at a glance <span>' + (snap ? 'Settings current to ' + esc(snap.settings_as_at) : '') + '</span>' }));
+
+    var sum = h('div', { class: 'summary' });
+    if (goal === 'retirement') {
+      sum.appendChild(tile('Balance at ' + (snap ? snap.retirement_age : '65'), m(snap && snap.projected_balance), true));
+      sum.appendChild(tile('Weekly to age ' + (snap ? snap.drawdown_age : '90'), m(snap && snap.weekly_income)));
+      sum.appendChild(tile('Years to go', snap ? String(snap.years_to_retirement) : '••'));
+    } else {
+      sum.appendChild(tile('Deposit available', m(snap && snap.available_for_deposit), true));
+      sum.appendChild(tile('Time to purchase', snap ? yrs(snap.years_to_purchase) : '• years'));
+      sum.appendChild(tile('Left for retirement', m(snap && snap.retirement_balance_after_withdrawal)));
+    }
+    sum.appendChild(tile('Your fund type', snap ? snap.fund_type_label : '•••'));
+    sum.appendChild(tile('Balance now', m(snap && snap.current_balance)));
+    sum.appendChild(tile('Return assumed', snap ? snap.assumed_return + '% p.a.' : '•.•%'));
+    el.appendChild(sum);
+
+    var ch = h('div', { class: 'chart', id: 'chart' });
+    ch.innerHTML = snap ? chart(snap) : '<svg viewBox="0 0 560 230" aria-hidden="true"><path class="a1" d="M44,200 C200,190 380,120 548,40 L548,200 Z"/><path class="l1" d="M44,200 C200,190 380,120 548,40"/></svg>';
+    el.appendChild(ch);
+    el.appendChild(h('div', { class: 'legend', html: '<span><i></i>' + (goal === 'first_home' ? "If you don't withdraw" : 'Balance growing, then being spent') + '</span>' + (goal === 'first_home' ? '<span><i class="alt"></i>If you withdraw for a deposit</span>' : '') }));
+
+    var cls = snap ? snap.status : '';
+    var circles = h('div', { class: 'circles' });
+    if (goal === 'retirement') {
+      circles.appendChild(circle('What goes in', ring(snap ? Math.min(100, snap.first_year.pct_of_income * 5) : 0, snap ? snap.first_year.pct_of_income + '%' : '••%', 'of pay', cls), snap ? money(snap.first_year.total) + ' yearly' : ''));
+    } else {
+      circles.appendChild(circle('Deposit', ring(snap && snap.balance_at_purchase ? snap.available_for_deposit / snap.balance_at_purchase * 100 : 0, snap ? '$' + Math.round(snap.available_for_deposit / 1000) + 'k' : '$••k', 'usable', cls), snap ? 'in ' + yrs(snap.years_to_purchase) : ''));
+    }
+    circles.appendChild(circle('Fund type', ring(snap ? ({ defensive: 20, conservative: 40, balanced: 60, growth: 80, aggressive: 100 })[snap.fund_type] : 0, snap ? snap.fund_type_label : '•••', snap && snap.five_year.low !== undefined ? snap.five_year.low + '% to ' + snap.five_year.high + '%' : '', cls), snap ? 'five-year range' : ''));
+    circles.appendChild(circle('Where you sit', ring(snap ? (snap.status === 'tracking' ? 100 : snap.status === 'look' ? 66 : 33) : 0, snap ? snap.status_label.split(' ')[0] : '•••', snap ? snap.status_label.split(' ').slice(1).join(' ') : '', cls)));
+    el.appendChild(circles);
+
+    var pos = h('div', { class: 'pos ' + cls });
+    if (!snap) {
+      pos.appendChild(h('h4', { text: '•••••' }));
+      pos.appendChild(h('p', { text: 'Where you stand, and what it means, shows up here.' }));
+    } else {
+      pos.appendChild(h('h4', { text: snap.status === 'talk' ? s.copy.talk_card_headline : snap.status_header }));
+      if (snap.status === 'talk') pos.appendChild(h('p', { text: s.copy.talk_card_body }));
+      if (snap.triggers.length) { var ul = h('ul', { class: 'trig' }); snap.triggers.forEach(function (t) { ul.appendChild(h('li', { text: t.text })); }); pos.appendChild(ul); }
+      else pos.appendChild(h('p', { text: 'None of your answers fell below the usual reference points this page checks.' }));
+      if (snap.fund_type_derived) pos.appendChild(h('p', { text: s.fund_helper.result_line.replace('{fund_type}', snap.fund_type_label) + ' ' + s.fund_helper.result_note }));
+      if (goal === 'first_home' && !snap.member_3yr) pos.appendChild(h('p', { text: s.copy.membership_note }));
+    }
+    el.appendChild(pos);
+
+    el.appendChild(h('div', { class: 'sec-title', html: 'Recent returns for your fund type <span>' + (snap ? 'To ' + esc(snap.five_year.as_at) : '') + '</span>' }));
+    if (snap) {
+      var fy = snap.five_year;
+      el.appendChild(h('div', { class: 'summary' }, [tile('Typical', fy.average + '% p.a.'), tile('Low', fy.low + '%'), tile('High', fy.high + '%')]));
+      var note = s.five_year_returns.by_fund_type[snap.fund_type].note;
+      el.appendChild(h('p', { class: 'fine', text: s.copy.returns_line.replace('{fund_type}', snap.fund_type_label).replace('{low}', fy.low).replace('{high}', fy.high).replace('{date}', fy.as_at) + ' ' + s.copy.returns_note + (note ? ' ' + note : '') }));
+    } else {
+      el.appendChild(h('div', { class: 'summary' }, [tile('Typical', '•.•%'), tile('Low', '•.•%'), tile('High', '•.•%')]));
+    }
+  }
+
+  function renderExtras(el, snap) {
+    if (!snap) return;
+    var s = SETTINGS, goal = snap.goal, base = S.answers;
+    var rates = s.contributions.selectable_employee_rates, funds = s.fund_types;
+    var employed = snap.employment_status === 'employed';
+    var cur = {
+      rate: rates.indexOf(snap.employee_rate) >= 0 ? rates.indexOf(snap.employee_rate) : rates.indexOf(s.contributions.default_employee_rate),
+      fund: funds.indexOf(snap.fund_type),
+      age: goal === 'retirement' ? snap.retirement_age : snap.years_to_purchase
+    };
+    var sl = h('div', { class: 'sliders' });
+    sl.appendChild(h('p', { class: 'lab', html: esc(s.copy.slider_label) + ' <button class="btn-link" type="button" id="slReset">Reset all</button>' }));
+    function slider(id, label, min, max, val, fmtv) {
+      var inp = h('input', { type: 'range', id: id, min: min, max: max, step: 1, value: val, 'aria-label': label });
+      var paint = function () { inp.style.setProperty('--fill', ((inp.value - min) / (max - min) * 100) + '%'); };
+      inp.addEventListener('input', function () { paint(); $(id + 'Val').textContent = fmtv(Number(inp.value)); recalc(); });
+      paint();
+      return h('div', { class: 'slider' }, [h('div', { class: 'top' }, [h('span', { text: label }), h('b', { id: id + 'Val', text: fmtv(val) })]), inp]);
+    }
+    if (employed) sl.appendChild(slider('slRate', 'Your contribution rate', 0, rates.length - 1, cur.rate, function (i) { return rates[i] + '%'; }));
+    sl.appendChild(slider('slFund', 'Type of fund', 0, funds.length - 1, cur.fund, function (i) { return s.fund_type_labels[funds[i]]; }));
+    if (goal === 'retirement') sl.appendChild(slider('slAge', 'Age you retire', snap.current_age + 1, s.retirement.max_retirement_age, cur.age, function (v) { return v; }));
+    else sl.appendChild(slider('slAge', 'Years until you buy', 1, 10, cur.age, yrs));
+    el.appendChild(sl);
+
+    function recalc() {
+      var inp = Object.assign({}, base, { goal: goal });
+      if (employed) inp.employee_rate = rates[Number($('slRate').value)];
+      inp.fund_type = funds[Number($('slFund').value)];
+      if (goal === 'retirement') inp.retirement_age = Number($('slAge').value); else inp.years_to_purchase = Number($('slAge').value);
+      var live = calculate(inp, s);
+      var hl = headline(live);
+      var big = document.querySelector('.hstrip .big'), sub = document.querySelector('.hstrip .sub'), cap = document.querySelector('.hstrip .cap');
+      if (big) { big.textContent = hl.value; big.style.transition = 'none'; big.style.transform = 'scale(1.06)'; setTimeout(function () { big.style.transition = 'transform .35s ease'; big.style.transform = 'none'; }, 20); }
+      if (sub) sub.textContent = hl.sub;
+      if (cap) cap.textContent = hl.label;
+      var ch = $('chart'); if (ch) ch.innerHTML = chart(live);
+    }
+    $('slReset').addEventListener('click', function () {
+      if (employed) { var r = $('slRate'); r.value = cur.rate; r.dispatchEvent(new Event('input')); }
+      var f = $('slFund'); f.value = cur.fund; f.dispatchEvent(new Event('input'));
+      var a = $('slAge'); a.value = cur.age; a.dispatchEvent(new Event('input'));
+    });
+
+    el.appendChild(h('div', { class: 'sec-title', html: 'The working behind it' }));
+    var led = h('div', { class: 'ledger' });
+    led.appendChild(ln('Age today', String(snap.current_age)));
+    led.appendChild(ln(goal === 'retirement' ? 'Planned retirement age' : 'Years until you buy', String(goal === 'retirement' ? snap.retirement_age : snap.years_to_purchase)));
+    led.appendChild(ln('Balance today', money(snap.current_balance)));
+    led.appendChild(ln('Yearly income', money(snap.income)));
+    if (employed) {
+      led.appendChild(ln('Your rate', snap.employee_rate + '%'));
+      led.appendChild(ln('You contribute each year', money(snap.first_year.member)));
+      led.appendChild(ln("Employer's contribution, after ESCT at " + snap.first_year.esct_rate + '%', money(snap.first_year.employer_net)));
+    } else led.appendChild(ln('Your voluntary top-ups', money(snap.first_year.member)));
+    led.appendChild(ln('Government contribution', '$' + snap.first_year.government.toFixed(2)));
+    led.appendChild(ln('Type of fund', snap.fund_type_label));
+    led.appendChild(ln('Return assumed, net of fees and tax', snap.assumed_return + '%'));
+    led.appendChild(ln('Balance projected at ' + snap.retirement_age, money(snap.projected_balance), true));
+    led.appendChild(ln('Weekly income estimate, to age ' + snap.drawdown_age, money(snap.weekly_income)));
+    if (goal === 'first_home') {
+      led.appendChild(ln('Balance when you buy', money(snap.balance_at_purchase)));
+      led.appendChild(ln('Has to stay in KiwiSaver', money(snap.min_balance_remaining)));
+      led.appendChild(ln('Deposit available', money(snap.available_for_deposit), true));
+      led.appendChild(ln('Retirement balance, post-withdrawal', money(snap.retirement_balance_after_withdrawal)));
+      led.appendChild(ln('What the withdrawal costs your retirement', money(snap.retirement_cost_of_withdrawal)));
+    }
+    el.appendChild(led);
+    el.appendChild(h('p', { class: 'fine', text: s.copy.fma_line + ' ' + s.copy.settings_line.replace('{date}', snap.settings_as_at) + ' ' + s.copy.super_note + (goal === 'first_home' ? ' ' + s.copy.min_balance_note : '') }));
+
+    // First-home only: the hand-off to the home-loan check is a demo stub.
+    if (goal === 'first_home') {
+      var hoNote = h('p', { class: 'ho-note', hidden: '', role: 'status', text: '(demo — the home-loan check is a separate showcase page, so nothing is carried across)' });
+      el.appendChild(h('div', { class: 'handoff' }, [
+        h('h4', { text: 'Now look at the home loan' }),
+        h('p', { text: 'Take this deposit figure straight into a home-loan estimate, without typing your details again.' }),
+        h('button', { class: 'btn', type: 'button', onclick: function () { hoNote.hidden = false; } }, ['Check my home loan']),
+        hoNote
+      ]));
+    }
+  }
+
+  /* ---- mock booking calendar (static: sample times, books nothing) --------- */
+  function buildBooking(el, snap) {
+    var a = SETTINGS.agent;
+    el.innerHTML = '';
+    el.appendChild(h('h3', { text: 'Go over it with an adviser' }));
+    el.appendChild(h('p', { text: 'No cost and no commitment. Choose a time that works for you.' }));
+    el.appendChild(h('button', { class: 'btn btn-primary', type: 'button', onclick: function () { var c = $('calEmbed'); if (c) c.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }, ['Book a time online']));
+    if (!snap) { el.appendChild(h('div', { class: 'cal-embed' })); return; }
+    el.appendChild(calMock());
+    el.appendChild(h('div', { class: 'callback', id: 'notBooked', html: 'Rather not book yet? <b>' + esc(a.name) + '</b> would call you shortly from <b>' + esc(a.caller_id) + '</b> instead. <span class="demo-tag">' + esc(DEMO_TAG) + '</span>' }));
+  }
+  function calMock() {
+    var DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    var MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    var TIMES = ['9:00am', '9:30am', '10:30am', '11:15am', '1:00pm', '2:30pm', '3:45pm', '4:30pm'];
+    var days = [], d = new Date();
+    while (days.length < 5) { d.setDate(d.getDate() + 1); if (d.getDay() !== 0 && d.getDay() !== 6) days.push(new Date(d.getTime())); }
+    var wrap = h('div', { class: 'cal-embed cal-mock', id: 'calEmbed' });
+    wrap.appendChild(h('div', { class: 'cm-head' }, [
+      h('div', { class: 'cm-av', html: '<svg viewBox="0 0 40 40" width="40" height="40" aria-hidden="true"><rect width="40" height="40" rx="11" fill="#2F3E8F"/><path d="M8.5 28.5a8.5 8.5 0 0 1 17 0z" fill="#F2A541"/><path d="M21.5 28.5c.4-7.8 4.4-13.6 11-16.4.6 7.6-3.3 13.9-11 16.4z" fill="#F7F5EF"/><path d="M6.5 28.5h27" stroke="#F7F5EF" stroke-width="2" stroke-linecap="round"/></svg>' }),
+      h('div', {}, [h('b', { text: 'KiwiSaver review call' }), h('span', { text: '30 min · phone or video · NZ time' })])
+    ]));
+    wrap.appendChild(h('p', { class: 'cm-note', text: 'Sample times for this demo. Choosing one books nothing.' }));
+    wrap.appendChild(h('p', { class: 'cm-lab', text: 'Pick a day' }));
+    var dayRow = h('div', { class: 'cm-days', role: 'group', 'aria-label': 'Pick a day' });
+    wrap.appendChild(dayRow);
+    wrap.appendChild(h('p', { class: 'cm-lab', id: 'cmTimeLab', text: 'Pick a time' }));
+    var slots = h('div', { class: 'cm-slots', role: 'group', 'aria-labelledby': 'cmTimeLab' });
+    wrap.appendChild(slots);
+    function label(dt) { return DAYS[dt.getDay()] + ' ' + dt.getDate() + ' ' + MONTHS[dt.getMonth()]; }
+    function drawSlots(di) {
+      dayRow.querySelectorAll('.cm-day').forEach(function (b, j) { b.classList.toggle('sel', j === di); b.setAttribute('aria-pressed', j === di ? 'true' : 'false'); });
+      slots.innerHTML = '';
+      TIMES.forEach(function (t, j) {
+        if ((j + di) % 3 === 0) return;
+        slots.appendChild(h('button', { class: 'cm-slot', type: 'button', 'aria-label': label(days[di]) + ' at ' + t, onclick: function () { markBooked(label(days[di]) + ' at ' + t); } }, [t]));
+      });
+    }
+    days.forEach(function (dt, i) {
+      dayRow.appendChild(h('button', { class: 'cm-day', type: 'button', 'aria-label': label(dt), onclick: function () { drawSlots(i); } }, [
+        h('span', { text: DAYS[dt.getDay()] }), h('b', { text: String(dt.getDate()) })
+      ]));
+    });
+    drawSlots(0);
+    return wrap;
+  }
+  function markBooked(when) {
+    S.booked = true;
+    var el = $('booking');
+    if (el) {
+      el.querySelectorAll('.btn-primary, .cal-embed, #notBooked').forEach(function (x) { x.remove(); });
+      el.appendChild(h('div', { class: 'booked', role: 'status', html: "<b>You're booked (demo)</b>" + esc(when) + ' with a Fernlight adviser. In the live version a confirmation email and a reminder would follow. Here, no appointment is made and nothing is sent.' }));
+    }
+    clearTimeout(armTimer); clearTimeout(collapseTimer);
+    var cw = $('callWrap'); if (cw) cw.hidden = true;
+  }
+
+  /* ---- simulated AI-call notice (toast -> bubble; no call is placed) ------- */
+  var armTimer = null, collapseTimer = null;
+  function nzHour() { try { var hh = parseInt(new Intl.DateTimeFormat('en-NZ', { timeZone: 'Pacific/Auckland', hour: 'numeric', hour12: false }).format(new Date()), 10); return isNaN(hh) ? 12 : hh % 24; } catch (e) { return 12; } }
+  function nzDay() { try { return new Intl.DateTimeFormat('en-NZ', { timeZone: 'Pacific/Auckland', weekday: 'short' }).format(new Date()); } catch (e) { return 'Mon'; } }
+  function outsideHours() { var hh = nzHour(); return hh < 8 || hh >= 20 || nzDay() === 'Sun'; }
+  function armCallNote() {
+    var wrap = $('callWrap'); if (!wrap || S.booked) return;
+    var a = SETTINGS.agent, name = a.name, ini = name.charAt(0), first = S.firstName;
+    var after = outsideHours();
+    wrap.innerHTML = '';
+    wrap.appendChild(h('button', { class: 'callbubble', type: 'button', 'aria-label': name + ' would call you ' + DEMO_TAG + '. Tap for details.', onclick: expandNote }, [
+      h('span', { class: 'pulse', 'aria-hidden': 'true' }), h('span', { class: 'ini', text: ini }), h('span', { class: 'ai', text: 'AI' })
+    ]));
+    wrap.appendChild(h('div', { class: 'callnote', role: 'status', 'aria-live': 'polite' }, [
+      h('button', { class: 'cn-x', type: 'button', 'aria-label': 'Minimise', onclick: collapseNote }, ['×']),
+      h('div', { class: 'cn-av' }, [h('span', { text: ini }), h('span', { class: 'ai', text: 'AI' })]),
+      h('div', { class: 'cn-tx' }, [
+        h('p', { class: 'cn-ttl', text: after ? name + ' will ring you in the morning' : (first ? first + ', ' : '') + name + ' will ring you in about five minutes' }),
+        h('p', { class: 'cn-sub', html: (after ? 'Calls begin at 8am, from <b>' + esc(a.caller_id) + '</b>.' : 'Unless you book a time above, the call comes from <b>' + esc(a.caller_id) + '</b>.') +
+          ' ' + esc(name) + " is Fernlight Advice's AI assistant: it goes over your results with you and can connect you to an adviser." +
+          ' <span class="cn-demo">' + esc(DEMO_TAG) + '</span>' })
+      ])
+    ]));
+    armTimer = setTimeout(function () {
+      if (S.booked) return;
+      wrap.hidden = false;
+      wrap.classList.remove('collapsed');
+      clearTimeout(collapseTimer);
+      collapseTimer = setTimeout(collapseNote, 16000);
+    }, 20000);
+  }
+  function collapseNote() { clearTimeout(collapseTimer); var w = $('callWrap'); if (w) w.classList.add('collapsed'); }
+  function expandNote() { var w = $('callWrap'); if (w) w.classList.remove('collapsed'); clearTimeout(collapseTimer); collapseTimer = setTimeout(collapseNote, 16000); }
+
+  buildStart();
+})();
+</script>
+</body>
+</html>
